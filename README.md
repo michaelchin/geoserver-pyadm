@@ -2,12 +2,16 @@
 
 #### activate/deactivate the python virtual env
 
-`source python-venv/bin/activate`
+- `source geoserver-pyadm-venv/bin/activate`
 
-`~ deactivate`
+- `deactivate`
 
-#### build the package
+#### build and install the package
 
 - `pip3 install pip-tools`
 - `pip-compile pyproject.toml`
 - `pip3 install .`
+
+#### test
+
+- .env must be in current working directory or the env variables have been set.
