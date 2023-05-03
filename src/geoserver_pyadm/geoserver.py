@@ -58,12 +58,13 @@ def get_cfg():
     return username, passwd, server_url
 
 
+@auth
 def upload_shapefiles(workspace_name, store_name, file_path):
     '''
     upload a local .zip file which contains shapefiles
     the "configure=all" will ensure that a new layer will be published for the uploaded file.
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
 
     headers = {
         "Content-type": "application/zip",
@@ -86,13 +87,14 @@ def upload_shapefiles(workspace_name, store_name, file_path):
     return r
 
 
+@auth
 def create_store(workspace_name, store_name, file_path):
     '''
     The file_path can be a path or a .shp file
     The file_path can be relative to the "data_dir".
     You can find the "Data directory"/ "data_dir" in the "server status" page.
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     data_url = f"<url>file:{file_path}</url><filetype>shapefile</filetype>"
     data = f"<dataStore><name>{store_name}</name><connectionParameters>{data_url}</connectionParameters></dataStore>"
     headers = {"content-type": "text/xml"}
@@ -107,14 +109,34 @@ def create_store(workspace_name, store_name, file_path):
         print(
             f"Unable to create datastore {store_name}. Status code: {r.status_code}, { r.content}"
         )
+    return r
 
 
+@auth
+def delete_store(workspace_name, store_name):
+    '''
+    delete a data store by name
+    '''
+    payload = {"recurse": "true"}
+    url = f"{server_url}/rest/workspaces/{workspace_name}/datastores/{store_name}"
+    r = requests.delete(url, auth=(username, passwd), params=payload)
+
+    if r.status_code == 200:
+        print(f"Datastore {store_name} has been deleted.")
+    elif r.status_code == 404:
+        print(f"Datastore {store_name} does not exist.")
+    else:
+        print(f"Error: {r.status_code} {r.content}")
+    return r
+
+
+@auth
 def publish_layer(workspace_name, store_name, layer_name):
     '''
     publish the shapefiles in the store folder
     the layer_name is the shapefiles name without .shp
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     url = f"{server_url}/rest/workspaces/{workspace_name}/datastores/{store_name}/featuretypes/"
 
     layer_xml = f"<featureType><name>{layer_name}</name></featureType>"
@@ -129,6 +151,7 @@ def publish_layer(workspace_name, store_name, layer_name):
     if r.status_code not in [200, 201]:
         print(
             f"Unable to publish layer {layer_name}. {r.status_code}, {r.content}")
+    return r
 
 
 @auth
@@ -170,11 +193,12 @@ def delete_workspace(workspace_name):
     return r
 
 
+@auth
 def upload_raster(workspace_name, store_name, file_path, file_fmt):
     '''
     it seems that only one raster is allowed per coverage store unless using raster mosaic
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
 
     headers = {"content-type": "application/zip", "Accept": "application/json"}
 
@@ -194,12 +218,14 @@ def upload_raster(workspace_name, store_name, file_path, file_fmt):
             print(
                 f"Unable to create Coveragestores {store_name}. Status code: {r.status_code}, { r.content}"
             )
+        return r
 
 
+@auth
 def create_coveragestore(workspace_name, store_name, file_path):
     '''
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     cfg = {
         "coverageStore": {
             "name": store_name,
@@ -225,14 +251,16 @@ def create_coveragestore(workspace_name, store_name, file_path):
         print(
             f"Unable to create datastore {store_name}. Status code: {r.status_code}, { r.content}"
         )
+    return r
 
 
+@auth
 def publish_raster_layer(workspace_name, store_name, layer_name):
     '''
     publish a coverage/raster layer from a coverage store
     it seems that only one raster is allowed per coverage store
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     url = f"{server_url}/rest/workspaces/{workspace_name}/coveragestores/{store_name}/coverages/"
 
     layer_xml = f"<coverage><name>{layer_name}</name><nativeName>{layer_name}</nativeName></coverage>"
@@ -247,12 +275,14 @@ def publish_raster_layer(workspace_name, store_name, layer_name):
     if r.status_code not in [200, 201]:
         print(
             f"Unable to publish layer {layer_name}. {r.status_code}, {r.content}")
+    return r
 
 
+@auth
 def add_style(style_name, workspace=None):
     '''
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     if workspace:
         url = f"{server_url}/rest/workspaces/{workspace}/styles"
     else:
@@ -266,35 +296,46 @@ def add_style(style_name, workspace=None):
         username, passwd), headers=headers)
     if r.status_code not in [200, 201]:
         print(f"Unable to create new style {style_name}. {r.content}")
+    return r
 
 
+@auth
 def upload_style(style_name, file_path, workspace=None):
     '''
+    upload a local sld file as a new style
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
 
     if workspace:
-        url = f"{server_url}/rest/workspaces/{workspace}/styles/{style_name}"
+        url = f"{server_url}/rest/workspaces/{workspace}/styles"
     else:
-        url = f"{server_url}/rest/styles/{style_name}"
+        url = f"{server_url}/rest/styles"
 
     header = {"content-type": "application/vnd.ogc.sld+xml"}
 
-    with open(file_path, "rb") as f:
-        r = requests.put(
+    payload = {"name": style_name, "raw": "true"}
+
+    with open(file_path, "r") as f:
+        style_data = f.read()
+        r = requests.post(
             url,
-            data=f.read(),
+            data=style_data,
             auth=(username, passwd),
             headers=header,
+            params=payload
         )
+        # print(file_path)
+        # print(style_data)
         if r.status_code not in [200, 201]:
             print(f"Unable to upload style {file_path}. {r.content}")
+        return r
 
 
+@auth
 def delete_style(style_name, workspace=None):
     '''
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
 
     if workspace:
         url = f"{server_url}/rest/workspaces/{workspace}/styles/{style_name}"
@@ -312,13 +353,14 @@ def delete_style(style_name, workspace=None):
         print(f"Unable to delete {style_name}. {r.status_code} {r.content}")
 
 
+@auth
 def set_default_style(full_layer_name: str, full_style_name: str):
     '''
     set the default style for a layer
     the "full_layer_name" includes the workspace_name, such as  workspace_name:layer_name
     the "full_style_name" includes the workspace_name, such as  workspace_name:style_name
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
 
     headers = {"content-type": "application/json"}
     # headers = {"content-type": "text/xml"}
@@ -350,13 +392,14 @@ def set_default_style(full_layer_name: str, full_style_name: str):
         )
 
 
+@auth
 def add_additional_style(full_layer_name: str, full_style_name: str):
     '''
     add additional style to a layer
     the "full_layer_name" includes the workspace_name, such as  workspace_name:layer_name
     the "full_style_name" includes the workspace_name, such as  workspace_name:style_name
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     url = f"{server_url}/rest/layers/{full_layer_name}"
 
     headers = {"content-type": "text/xml"}
@@ -377,11 +420,12 @@ def add_additional_style(full_layer_name: str, full_style_name: str):
         )
 
 
+@auth
 def get_styles(full_layer_name: str):
     '''
     the "full_layer_name" includes the workspace_name, such as  workspace_name:layer_name
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     url = f"{server_url}/rest/layers/{full_layer_name}/styles"
 
     r = requests.get(
@@ -395,10 +439,12 @@ def get_styles(full_layer_name: str):
         return None
 
 
+@auth
 def get_layer(layer_name: str, workspace=None):
     '''
+    get layer info
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     if workspace:
         url = f"{server_url}/rest/workspaces/{workspace}/layers/{layer_name}"
     else:
@@ -414,12 +460,13 @@ def get_layer(layer_name: str, workspace=None):
         return None
 
 
+@auth
 def get_layers(workspace=None):
     '''
     Get all the layers from geoserver
     If workspace is None, it will list all the layers from geoserver
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     if workspace:
         url = f"{server_url}/rest/workspaces/{workspace}/layers"
     else:
@@ -437,10 +484,11 @@ def get_layers(workspace=None):
     return None
 
 
+@auth
 def delete_layer(layer_name, workspace=None):
     '''
     '''
-    username, passwd, server_url = get_cfg()
+    #username, passwd, server_url = get_cfg()
     payload = {"recurse": "true"}
 
     if workspace:
