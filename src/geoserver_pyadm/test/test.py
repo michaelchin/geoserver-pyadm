@@ -1,7 +1,8 @@
-import os, sys
+import geoserver
+import os
+import sys
 
 sys.path.insert(0, "../")  # make sure the geoserver.py is in the ../
-import geoserver
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -16,7 +17,8 @@ geoserver.delete_workspace(ws_name)
 geoserver.create_workspace(ws_name)
 
 # upload local shapefiles
-geoserver.upload_shapefiles(ws_name, store_name_1, f"{script_path}/coastlines_0Ma.zip")
+geoserver.upload_shapefiles(ws_name, store_name_1,
+                            f"{script_path}/coastlines_0Ma.zip")
 geoserver.upload_shapefiles(
     ws_name, store_name_1, f"{script_path}/coastlines_230Ma.zip"
 )
@@ -59,7 +61,8 @@ geoserver.upload_style("test-style-1", f"{script_path}/test.sld", ws_name)
 
 
 geoserver.set_default_style(f"{ws_name}:tiger_roads", "test-style-0")
-geoserver.add_additional_style(f"{ws_name}:giant_polygon", f"{ws_name}:test-style-1")
+geoserver.add_additional_style(
+    f"{ws_name}:giant_polygon", f"{ws_name}:test-style-1")
 
-geoserver.get_styles(f"{ws_name}:giant_polygon")
+geoserver.get_layer_styles(f"{ws_name}:giant_polygon")
 geoserver.get_layer("tiger_roads", ws_name)

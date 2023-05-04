@@ -303,6 +303,7 @@ def add_style(style_name, workspace=None):
 def upload_style(style_name, file_path, workspace=None):
     '''
     upload a local sld file as a new style
+    the sytle must not exist yet.
     '''
     #username, passwd, server_url = get_cfg()
 
@@ -312,6 +313,8 @@ def upload_style(style_name, file_path, workspace=None):
         url = f"{server_url}/rest/styles"
 
     header = {"content-type": "application/vnd.ogc.sld+xml"}
+    # SLD 1.1 / SE 1.1 with a mime type of application/vnd.ogc.se+xml
+    # SLD package(zip file containing sld and image files used in the style) with a mime type of application/zip
 
     payload = {"name": style_name, "raw": "true"}
 
@@ -324,11 +327,32 @@ def upload_style(style_name, file_path, workspace=None):
             headers=header,
             params=payload
         )
-        # print(file_path)
-        # print(style_data)
         if r.status_code not in [200, 201]:
             print(f"Unable to upload style {file_path}. {r.content}")
         return r
+
+
+@auth
+def modify_style(style_name, style_data, workspace=None):
+    '''
+    change an existing style
+    '''
+    if workspace:
+        url = f"{server_url}/rest/workspaces/{workspace}/styles/{style_name}"
+    else:
+        url = f"{server_url}/rest/styles/{style_name}"
+
+    header = {"content-type": "application/vnd.ogc.sld+xml"}
+
+    r = requests.put(
+        url,
+        data=style_data,
+        auth=(username, passwd),
+        headers=header,
+    )
+    if r.status_code not in [200, 201]:
+        print(f"Unable to modify style {style_name}. {r.content}")
+    return r
 
 
 @auth
@@ -351,6 +375,7 @@ def delete_style(style_name, workspace=None):
             f"Style {style_name} has been deleted. {r.status_code} {r.content}")
     else:
         print(f"Unable to delete {style_name}. {r.status_code} {r.content}")
+    return r
 
 
 @auth
@@ -421,8 +446,9 @@ def add_additional_style(full_layer_name: str, full_style_name: str):
 
 
 @auth
-def get_styles(full_layer_name: str):
+def get_layer_styles(full_layer_name: str):
     '''
+    get styles associated with a layer
     the "full_layer_name" includes the workspace_name, such as  workspace_name:layer_name
     '''
     #username, passwd, server_url = get_cfg()
@@ -432,9 +458,13 @@ def get_styles(full_layer_name: str):
         url,
         auth=(username, passwd),
     )
-    print(r.content)
+    # print(r.content)
     if r.status_code in [200, 201]:
-        return json.loads(r.content)
+        ret = []
+        data = r.json()
+        if "style" in data['styles']:
+            ret = [d['name'] for d in data['styles']['style']]
+        return ret
     else:
         return None
 
@@ -453,7 +483,7 @@ def get_layer(layer_name: str, workspace=None):
         url,
         auth=(username, passwd),
     )
-    print(r.json())
+    # print(r.json())
     if r.status_code in [200, 201]:
         return r.json()
     else:
@@ -477,9 +507,11 @@ def get_layers(workspace=None):
     )
     # print(r.json())
     if r.status_code in [200, 201]:
-        layers = r.json()["layers"]
-        if "layer" in layers:
-            return layers["layer"]
+        ret = []
+        data = r.json()
+        if "layer" in data['layers']:
+            ret = [d['name'] for d in data['layers']['layer']]
+        return ret
 
     return None
 
@@ -508,3 +540,86 @@ def delete_layer(layer_name, workspace=None):
         print(f"Failed to delete layer:{layer_name}")
         print(r.text)
         return False
+
+
+@auth
+def get_styles(workspace=None):
+    '''
+    get global styles or  styles in a workspace
+    '''
+    if workspace:
+        url = f"{server_url}/rest/workspaces/{workspace}/styles"
+    else:
+        url = f"{server_url}/rest/styles"
+    r = requests.get(
+        url,
+        auth=(username, passwd),
+    )
+    # print(r.json())
+    if r.status_code in [200, 201]:
+        ret = []
+        data = r.json()
+        if "style" in data['styles']:
+            ret = [d['name'] for d in data['styles']['style']]
+        return ret
+    else:
+        return None
+
+
+@auth
+def get_all_workspaces():
+    '''
+    get all workspaces
+    '''
+    url = f"{server_url}/rest/workspaces"
+    r = requests.get(
+        url,
+        auth=(username, passwd),
+    )
+    # print(r.json())
+    if r.status_code in [200, 201]:
+        ret = []
+        data = r.json()
+        if "workspace" in data['workspaces']:
+            ret = [d['name'] for d in data['workspaces']['workspace']]
+        return ret
+    else:
+        return None
+
+
+@auth
+def get_workspace(name):
+    '''
+    get workspace info
+    '''
+    url = f"{server_url}/rest/workspaces/{name}"
+    r = requests.get(
+        url,
+        auth=(username, passwd),
+    )
+    # print(r.json())
+    if r.status_code in [200, 201]:
+        return r.json()
+    else:
+        return None
+
+
+@auth
+def get_datastores(workspace):
+    '''
+    get datastores in a workspace 
+    '''
+    url = f"{server_url}/rest/workspaces/{workspace}/datastores"
+    r = requests.get(
+        url,
+        auth=(username, passwd),
+    )
+    # print(r.json())
+    if r.status_code in [200, 201]:
+        ret = []
+        data = r.json()
+        if "dataStore" in data['dataStores']:
+            ret = [d['name'] for d in data['dataStores']['dataStore']]
+        return ret
+    else:
+        return None
