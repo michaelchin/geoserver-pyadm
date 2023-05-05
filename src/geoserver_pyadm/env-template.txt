@@ -1,0 +1,3 @@
+GEOSERVER_USERNAME=gplates
+GEOSERVER_PASSWORD=mf-x(>Kc_skyA8}8
+GEOSERVER_URL=https://geosrv.gplates.org/geoserver
