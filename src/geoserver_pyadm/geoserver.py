@@ -1,10 +1,13 @@
 """
 Geoserver Python API
 """
+import glob
 import json
 import os
-from pathlib import Path
+import tempfile
+import zipfile
 from functools import wraps
+from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
@@ -73,15 +76,57 @@ def get_cfg():
 
 
 @auth
-def upload_shapefiles(workspace_name, store_name, file_path):
-    """Upload a local .zip file which contains shapefiles.
+def get_global_settings():
+    """Get GeoServer’s global settings."""
+    url = f"{server_url}/rest/settings"
+    headers = {"Accept": "application/json"}
+
+    r = requests.get(
+        url,
+        auth=(username, passwd),
+        headers=headers,
+    )
+    return r.json()
+
+
+@auth
+def get_status():
+    """Get GeoServer’s status."""
+    url = f"{server_url}/rest/about/status"
+    headers = {"Accept": "application/json"}
+
+    r = requests.get(
+        url,
+        auth=(username, passwd),
+        headers=headers,
+    )
+    return r.json()
+
+
+@auth
+def get_version():
+    """Get GeoServer’s version."""
+    url = f"{server_url}/rest//about/version"
+    headers = {"Accept": "application/json"}
+
+    r = requests.get(
+        url,
+        auth=(username, passwd),
+        headers=headers,
+    )
+    return r.json()
+
+
+@auth
+def upload_shapefile_zip(workspace_name, store_name, file_path):
+    """Upload a local .zip file which contains shapefile.
 
     The "configure=all" will ensure that a new layer will be published for the uploaded file.
 
     :param workspace_name: the name of destine workspace in which you would like to
-        upload the shapefiles
-    :param store_name: the name of datastore in which you would like to upload the shapefiles
-    :param file_path: the local file path to your shapefiles(.zip)
+        upload the shapefile
+    :param store_name: the name of datastore in which you would like to upload the shapefile
+    :param file_path: the local file path to your shapefile(.zip)
 
     """
     # username, passwd, server_url = get_cfg()
@@ -105,6 +150,62 @@ def upload_shapefiles(workspace_name, store_name, file_path):
             headers=headers,
         )
     return r
+
+
+def upload_shapefile(workspace_name, store_name, file_path):
+    """Upload a local shapefile. A shapefile may contain several files. You need to specify the path of the .shp file.
+
+    The "configure=all" will ensure that a new layer will be published for the uploaded file.
+
+    :param workspace_name: the name of destine workspace in which you would like to
+        upload the shapefile
+    :param store_name: the name of datastore in which you would like to upload the shapefile
+    :param file_path: the local path to your shapefile, such as xxxxxx.shp
+
+    """
+    p = Path(file_path)
+    file_name = p.stem
+    ext = p.suffix
+
+    if ext == ".zip":
+        return upload_shapefile_zip(workspace_name, store_name, file_path)
+    elif ext == ".shp":
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            files = glob.glob(f"{file_path[:-4]}.*")
+            with zipfile.ZipFile(f"{tmp_dir}/{file_name}.zip", "w") as tmp_zip:
+                for f in files:
+                    tmp_zip.write(f, os.path.basename(f))
+            t = f"{tmp_dir}/{file_name}.zip"
+            return upload_shapefile_zip(
+                workspace_name, store_name, f"{tmp_dir}/{file_name}.zip"
+            )
+    else:
+        raise Exception(f"Unsupported file extension: {file_path}")
+
+
+@auth
+def upload_shapefile_folder(workspace_name, store_name, folder_path):
+    """Upload all the shapefiles within a local folder. The shapefiles can be .zip files or separate files.
+        Make sure your .zip is valid. If there is a folder in your .zip file, the upload will fail.
+        For example, if, inside you .zip file, your files looks like shapefile/xxxxxxx.shp, the .zip file cannot be uploaded.
+        Inside your .zip file, it must looks like this xxxxxxxx.shp, xxxxxxxx.dbf, etc.
+
+    The "configure=all" will ensure that a new layer will be published for the uploaded files.
+
+    :param workspace_name: the name of destine workspace in which you would like to
+        upload the shapefiles
+    :param store_name: the name of datastore in which you would like to upload the shapefiles
+    :param folder_path: the local path to your shapefiles
+
+    """
+    shp_files = glob.glob(f"{folder_path}/*.shp")
+    for f in shp_files:
+        upload_shapefile(workspace_name, store_name, f)
+        print(f)
+    zip_files = glob.glob(f"{folder_path}/*.zip")
+    for f in zip_files:
+        upload_shapefile(workspace_name, store_name, f)
+        print(f)
 
 
 @auth
