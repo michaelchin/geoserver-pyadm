@@ -118,15 +118,19 @@ def get_version():
 
 
 @auth
-def upload_shapefile_zip(workspace_name, store_name, file_path):
+def upload_shapefile_zip(workspace_name, store_name, file_path, configure="none"):
     """Upload a local .zip file which contains shapefile.
-
-    The "configure=all" will ensure that a new layer will be published for the uploaded file.
+        warning: when use configure="all", all the shapefiles in the datastore will
+        be published(not only the one you just uploaded)
 
     :param workspace_name: the name of destine workspace in which you would like to
         upload the shapefile
     :param store_name: the name of datastore in which you would like to upload the shapefile
     :param file_path: the local file path to your shapefile(.zip)
+    :param configure: this parameter takes three possible values
+        first—(Default) Only setup the first feature type available in the data store.
+        none—Do not configure any feature types.
+        all—Configure all feature types.
 
     """
     # username, passwd, server_url = get_cfg()
@@ -139,7 +143,7 @@ def upload_shapefile_zip(workspace_name, store_name, file_path):
     file_name = Path(file_path).stem
     url = (
         f"{server_url}/rest/workspaces/{workspace_name}/datastores"
-        + f"/{store_name}/file.shp?filename={file_name}&update=overwrite&configure=all"
+        + f"/{store_name}/file.shp?filename={file_name}&update=overwrite&configure={configure}"
     )
 
     with open(file_path, "rb") as f:
@@ -152,15 +156,21 @@ def upload_shapefile_zip(workspace_name, store_name, file_path):
     return r
 
 
-def upload_shapefile(workspace_name, store_name, file_path):
-    """Upload a local shapefile. A shapefile may contain several files. You need to specify the path of the .shp file.
+def upload_shapefile(workspace_name, store_name, file_path, configure="none"):
+    """Upload a local shapefile. A shapefile may contain several files.
+        You need to specify the path of the .shp file.
 
-    The "configure=all" will ensure that a new layer will be published for the uploaded file.
+        warning: when use configure="all", all the shapefiles in the datastore will
+        be published(not only the one you just uploaded)
 
     :param workspace_name: the name of destine workspace in which you would like to
         upload the shapefile
     :param store_name: the name of datastore in which you would like to upload the shapefile
     :param file_path: the local path to your shapefile, such as xxxxxx.shp
+    :param configure: this parameter takes three possible values
+        first—(Default) Only setup the first feature type available in the data store.
+        none—Do not configure any feature types.
+        all—Configure all feature types.
 
     """
     p = Path(file_path)
@@ -168,7 +178,7 @@ def upload_shapefile(workspace_name, store_name, file_path):
     ext = p.suffix
 
     if ext == ".zip":
-        return upload_shapefile_zip(workspace_name, store_name, file_path)
+        return upload_shapefile_zip(workspace_name, store_name, file_path, configure)
     elif ext == ".shp":
         with tempfile.TemporaryDirectory() as tmp_dir:
             files = glob.glob(f"{file_path[:-4]}.*")
@@ -177,35 +187,40 @@ def upload_shapefile(workspace_name, store_name, file_path):
                     tmp_zip.write(f, os.path.basename(f))
             t = f"{tmp_dir}/{file_name}.zip"
             return upload_shapefile_zip(
-                workspace_name, store_name, f"{tmp_dir}/{file_name}.zip"
+                workspace_name, store_name, f"{tmp_dir}/{file_name}.zip", configure
             )
     else:
         raise Exception(f"Unsupported file extension: {file_path}")
 
 
-@auth
-def upload_shapefile_folder(workspace_name, store_name, folder_path):
+def upload_shapefile_folder(workspace_name, store_name, folder_path, configure="none"):
     """Upload all the shapefiles within a local folder. The shapefiles can be .zip files or separate files.
         Make sure your .zip is valid. If there is a folder in your .zip file, the upload will fail.
         For example, if, inside you .zip file, your files looks like shapefile/xxxxxxx.shp, the .zip file cannot be uploaded.
         Inside your .zip file, it must looks like this xxxxxxxx.shp, xxxxxxxx.dbf, etc.
 
-    The "configure=all" will ensure that a new layer will be published for the uploaded files.
+        warning: when use configure="all", all the shapefiles in the datastore will
+        be published(not only the one you just uploaded)
 
     :param workspace_name: the name of destine workspace in which you would like to
         upload the shapefiles
     :param store_name: the name of datastore in which you would like to upload the shapefiles
     :param folder_path: the local path to your shapefiles
+    :param configure: this parameter takes three possible values
+        first—(Default) Only setup the first feature type available in the data store.
+        none—Do not configure any feature types.
+        all—Configure all feature types.
 
     """
     shp_files = glob.glob(f"{folder_path}/*.shp")
     for f in shp_files:
-        upload_shapefile(workspace_name, store_name, f)
+        upload_shapefile(workspace_name, store_name, f, configure)
         print(f)
     zip_files = glob.glob(f"{folder_path}/*.zip")
     for f in zip_files:
-        upload_shapefile(workspace_name, store_name, f)
+        upload_shapefile(workspace_name, store_name, f, configure)
         print(f)
+    return "Done"
 
 
 @auth
@@ -701,33 +716,42 @@ def get_layers(workspace=None):
 
 @auth
 def delete_layer(layer_name, workspace=None):
-    """Delete a layer by name
+    """Delete a layer/layers by name
 
     :param layer_name: the name of the layer which you would like to delete
     :param workspace:  (Default value = None) If the workspace name is not given,
-        delete the first layer which matches the given layer name. This is odd!
+        delete all layers with the given name.
 
     """
-    # username, passwd, server_url = get_cfg()
-    payload = {"recurse": "true"}
+    payload = {"recurse": "true", "quietOnNotFound": "true"}
 
     if workspace:
         url = f"{server_url}/rest/workspaces/{workspace}/layers/{layer_name}"
+        r = requests.delete(
+            url=url,
+            params=payload,
+            auth=(username, passwd),
+        )
+        if r.status_code in [200, 201]:
+            print(f"The layer {layer_name} has been deleted!")
+            return r.content
+        else:
+            print(f"Failed to delete layer:{layer_name}")
+            return r.content
     else:
         url = f"{server_url}/rest/layers/{layer_name}"
-
-    r = requests.delete(
-        url=url,
-        params=payload,
-        auth=(username, passwd),
-    )
-    if r.status_code in [200, 201]:
-        print(f"layer:{layer_name} has been deleted!")
-        return True
-    else:
-        print(f"Failed to delete layer:{layer_name}")
-        print(r.text)
-        return False
+        while True:
+            r = requests.delete(
+                url=url,
+                params=payload,
+                auth=(username, passwd),
+            )
+            if r.status_code not in [200, 201]:
+                break
+            else:
+                print(f"The layer {layer_name} has been deleted!")
+            # print(r.content)
+        return "done"
 
 
 @auth

@@ -1,22 +1,36 @@
 from importer import *
 
-ws_name = "a-test-workspace"
-store_name = "a-test-store"
+ws_name_1 = "a-test-workspace-1"
+ws_name_2 = "a-test-workspace-2"
+store_name_1 = "a-test-store-1"
+store_name_2 = "a-test-store-2"
 
-geoserver.create_workspace(ws_name)
+geoserver.create_workspace(ws_name_1)
+geoserver.create_workspace(ws_name_2)
 
-# upload local shapefiles, the new layers will be published
-"""
-r = geoserver.upload_shapefile(ws_name, store_name, f"shapefiles/coastlines_0Ma.zip")
-print(r)
-r = geoserver.upload_shapefile(ws_name, store_name, f"shapefiles/coastlines_230Ma.zip")
-print(r)
+# configure="none", upload local shapefiles only, the new layers will be published in next function call
 r = geoserver.upload_shapefile(
-    ws_name,
-    store_name,
-    f"shapefiles/Global_EarthByte_GPlates_PresentDay_ContinentalPolygons.shp",
+    ws_name_1, store_name_1, f"shapefiles/coastline-0-Ma-test.zip", "none"
 )
 print(r)
-"""
+r = geoserver.upload_shapefile(
+    ws_name_1,
+    store_name_1,
+    f"shapefiles/Global_EarthByte_GPlates_PresentDay_ContinentalPolygons.shp",
+    "none",
+)
+print(r)
 
-geoserver.upload_shapefile_folder(ws_name, store_name, f"shapefiles")
+# publish the layers
+r = geoserver.publish_layer(ws_name_1, store_name_1, "coastline-0-Ma-test")
+print(r)
+r = geoserver.publish_layer(
+    ws_name_1, store_name_1, "Global_EarthByte_GPlates_PresentDay_ContinentalPolygons"
+)
+print(r)
+
+
+# use configure="all" to upload all shapefiles and publish them
+# be aware, all the shapefiles in store_name_2 will be published(not only the ones you just uploaded)
+r = geoserver.upload_shapefile_folder(ws_name_2, store_name_2, f"shapefiles", "all")
+print(r)
