@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geoserver_pyadm.geoserver &mdash; geoserver-pyadm 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            geoserver-pyadm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">geoserver_pyadm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">geoserver-pyadm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">geoserver_pyadm.geoserver</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for geoserver_pyadm.geoserver</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Geoserver Python API</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+
+<span class="n">script_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+<span class="n">username</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">passwd</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">server_url</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="auth"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.auth">[docs]</a><span class="k">def</span> <span class="nf">auth</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;decorator to get server authentication info</span>
+
+<span class="sd">    :param func: the user&#39;s function which this decorator will wrap around.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;the wrapper function</span>
+
+<span class="sd">        :param *args: allow the inner function to accept multiple positional arguments</span>
+<span class="sd">        :param **kwargs: allow the inner function to accept multiple keyword (or named) arguments.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">username</span>
+        <span class="k">global</span> <span class="n">passwd</span>
+        <span class="k">global</span> <span class="n">server_url</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">passwd</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">server_url</span><span class="p">:</span>
+            <span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">server_url</span> <span class="o">=</span> <span class="n">get_cfg</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">inner</span></div>
+
+
+<div class="viewcode-block" id="get_env"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_env">[docs]</a><span class="k">def</span> <span class="nf">get_env</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get username, password and url from environment.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GEOSERVER_USERNAME&quot;</span><span class="p">),</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GEOSERVER_PASSWORD&quot;</span><span class="p">),</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GEOSERVER_URL&quot;</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_cfg"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_cfg">[docs]</a><span class="k">def</span> <span class="nf">get_cfg</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the server configuration, such as username, password, geoserver URL</span>
+<span class="sd">    either from environment variables or .env file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># first, try to get the info from environment variables</span>
+    <span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">server_url</span> <span class="o">=</span> <span class="n">get_env</span><span class="p">()</span>
+    <span class="c1"># if cound not get all info from environment variables</span>
+    <span class="c1"># try to load .env file</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">server_url</span><span class="p">]):</span>
+        <span class="c1"># load environment variables from .env.</span>
+        <span class="n">load_dotenv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cwd</span><span class="si">}</span><span class="s2">/.env&quot;</span><span class="p">)</span>
+        <span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">server_url</span> <span class="o">=</span> <span class="n">get_env</span><span class="p">()</span>
+        <span class="c1"># still failed? inform caller something is wrong</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">server_url</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="p">(</span>
+                <span class="s2">&quot;set env variables GEOSERVER_USERNAME, GEOSERVER_PASSWORD, GEOSERVER_URL and then retry&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">server_url</span></div>
+
+
+<div class="viewcode-block" id="upload_shapefiles"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.upload_shapefiles">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">upload_shapefiles</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local .zip file which contains shapefiles.</span>
+
+<span class="sd">    The &quot;configure=all&quot; will ensure that a new layer will be published for the uploaded file.</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        upload the shapefiles</span>
+<span class="sd">    :param store_name: the name of datastore in which you would like to upload the shapefiles</span>
+<span class="sd">    :param file_path: the local file path to your shapefiles(.zip)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/zip&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/xml&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/datastores&quot;</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/file.shp?filename=</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&amp;update=overwrite&amp;configure=all&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span>
+            <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="create_store"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.create_store">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">create_store</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a datastore from a folder or .shp on the server.</span>
+<span class="sd">        The folder or .shp must have already been on the server.</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        create the data store</span>
+<span class="sd">    :param store_name: the name of data store which you would like to create</span>
+<span class="sd">    :param file_path: the file_path on the geoserver, relative to the &quot;data_dir&quot;</span>
+<span class="sd">        (can be a path or a .shp file).</span>
+<span class="sd">        You can find the &quot;Data directory&quot;/ &quot;data_dir&quot; in the &quot;server status&quot; page.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">data_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;url&gt;file:</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&lt;/url&gt;&lt;filetype&gt;shapefile&lt;/filetype&gt;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;dataStore&gt;&lt;name&gt;</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">&lt;/name&gt;&lt;connectionParameters&gt;</span><span class="si">{</span><span class="n">data_url</span><span class="si">}</span><span class="s2">&lt;/connectionParameters&gt;&lt;/dataStore&gt;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/xml&quot;</span><span class="p">}</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/datastores&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Datastore </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2"> was created/updated successfully&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unable to create datastore </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">. Status code: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="w"> </span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="delete_store"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.delete_store">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">delete_store</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a data store by name.</span>
+
+<span class="sd">    :param workspace_name: the name of workspace in which the data store is</span>
+<span class="sd">    :param store_name: the name of data store which you would like to delete</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;recurse&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/datastores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Datastore </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2"> has been deleted.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Datastore </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="publish_layer"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.publish_layer">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">publish_layer</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Publish a layer in the data store</span>
+
+<span class="sd">    :param workspace_name: the name of the workspace in which the data store is</span>
+<span class="sd">    :param store_name: the name of the data store in which the layer you would like to publish is</span>
+<span class="sd">    :param layer_name: the name of layer which you would like to publish.</span>
+<span class="sd">        the name could be the shapefiles name without .shp</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/datastores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/featuretypes/&quot;</span>
+
+    <span class="n">layer_xml</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;featureType&gt;&lt;name&gt;</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&lt;/name&gt;&lt;/featureType&gt;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/xml&quot;</span><span class="p">}</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">layer_xml</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to publish layer </span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="create_workspace"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.create_workspace">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">create_workspace</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;create a workspace by name</span>
+
+<span class="sd">    :param workspace_name: the name of the workspace which you would like to create</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;workspace&gt;&lt;name&gt;</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">&lt;/name&gt;&lt;/workspace&gt;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/xml&quot;</span><span class="p">}</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The workspace </span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2"> has been created!&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">401</span><span class="p">,</span> <span class="mi">409</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The workspace </span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to create workspace </span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="delete_workspace"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.delete_workspace">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">delete_workspace</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;delete a workspace by name</span>
+
+<span class="sd">    :param workspace_name: the name of the workspace which you would like to delete</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;recurse&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Workspace </span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2"> has been deleted.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Workspace </span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="upload_raster"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.upload_raster">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">upload_raster</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">file_fmt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local raster into geoserver.</span>
+<span class="sd">        It seems that only one raster is allowed per coverage store unless using raster mosaic.</span>
+
+<span class="sd">    :param workspace_name: the name of workspace</span>
+<span class="sd">    :param store_name: the name of data store</span>
+<span class="sd">    :param file_path: the local file path to the raster(.zip)</span>
+<span class="sd">    :param file_fmt: such as geotiff</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/zip&quot;</span><span class="p">,</span> <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+
+    <span class="c1"># file_name = Path(file_path).stem</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/coveragestores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/&quot;</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;file.</span><span class="si">{</span><span class="n">file_fmt</span><span class="si">}</span><span class="s2">?coverageName=</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">&amp;configure=all&quot;</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coveragestores </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2"> was created/updated successfully&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unable to create Coveragestores </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">. Status code: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="w"> </span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="create_coveragestore"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.create_coveragestore">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">create_coveragestore</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a coverage store from a raster file on the geoserver.</span>
+
+<span class="sd">    :param workspace_name: the name of workspace</span>
+<span class="sd">    :param store_name: the name of the coverage store which you would like to create</span>
+<span class="sd">    :param file_path: the file_path on the geoserver, relative to the &quot;data_dir&quot;</span>
+<span class="sd">        You can find the &quot;Data directory&quot;/ &quot;data_dir&quot; in the &quot;server status&quot; page.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;coverageStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">store_name</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GeoTIFF&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;_default&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;workspace&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">workspace_name</span><span class="p">},</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;file:</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/coveragestores&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Datastore </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2"> was created/updated successfully&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unable to create datastore </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">. Status code: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="w"> </span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="publish_raster_layer"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.publish_raster_layer">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">publish_raster_layer</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Publish a coverage/raster layer from a coverage store.</span>
+<span class="sd">        It seems ,for some reason, that only one raster is allowed per coverage store.</span>
+
+<span class="sd">    :param workspace_name: the name of the workspace</span>
+<span class="sd">    :param store_name: the name of the coverage store in which the raster layer reside</span>
+<span class="sd">    :param layer_name: the name of the raster layer</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/coveragestores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/coverages/&quot;</span>
+
+    <span class="n">layer_xml</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;coverage&gt;&lt;name&gt;</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&lt;/name&gt;&lt;nativeName&gt;</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&lt;/nativeName&gt;&lt;/coverage&gt;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/xml&quot;</span><span class="p">}</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">layer_xml</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to publish layer </span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="add_style"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.add_style">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">add_style</span><span class="p">(</span><span class="n">style_name</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an empty style globally or into a workspace.</span>
+
+<span class="sd">    :param style_name: the name of the style which you would like to create</span>
+<span class="sd">    :param workspace:  (Default value = None) the name of the workspace.</span>
+<span class="sd">        If the workspace name is not given, the new style will be a global one.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/styles&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/styles/&quot;</span>
+
+    <span class="n">style_xml</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;&lt;style&gt;&lt;name&gt;</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">&lt;/name&gt;&lt;filename&gt;</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">.sld&lt;/filename&gt;&lt;/style&gt;&quot;</span>
+    <span class="p">)</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/xml&quot;</span><span class="p">}</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">style_xml</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to create new style </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="upload_style"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.upload_style">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">upload_style</span><span class="p">(</span><span class="n">style_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local sld file as a new style.</span>
+<span class="sd">        The sytle must not exist yet.</span>
+
+<span class="sd">    :param style_name: the name of the new style</span>
+<span class="sd">    :param file_path: the local path to the .sld file</span>
+<span class="sd">    :param workspace:  (Default value = None) the name of the workspace.</span>
+<span class="sd">        If the workspace name is not given, the new style will be a global one.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/styles&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/styles&quot;</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/vnd.ogc.sld+xml&quot;</span><span class="p">}</span>
+    <span class="c1"># SLD 1.1 / SE 1.1 with a mime type of application/vnd.ogc.se+xml</span>
+    <span class="c1"># SLD package(zip file containing sld and image files used in the style) with a mime type of application/zip</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">style_name</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">style_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">style_data</span><span class="p">,</span>
+            <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to upload style </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="modify_style"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.modify_style">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">modify_style</span><span class="p">(</span><span class="n">style_name</span><span class="p">,</span> <span class="n">style_data</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Change an existing style.</span>
+
+<span class="sd">    :param style_name: the name of the style</span>
+<span class="sd">    :param style_data: the new data for the style</span>
+<span class="sd">    :param workspace:  (Default value = None) the name of the workspace.</span>
+<span class="sd">        If the workspace name is not given, the style is a global one.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/styles/</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/styles/</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/vnd.ogc.sld+xml&quot;</span><span class="p">}</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">style_data</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to modify style </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="delete_style"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.delete_style">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">delete_style</span><span class="p">(</span><span class="n">style_name</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a style by name</span>
+
+<span class="sd">    :param style_name: the name of the style which you would like to delete</span>
+<span class="sd">    :param workspace:  (Default value = None) the name of the workspace.</span>
+<span class="sd">        If the workspace name is not given, the style is a global one.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/styles/</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/styles/</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;recurse&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;purge&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Style </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2"> has been deleted. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to delete </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="set_default_style"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.set_default_style">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">set_default_style</span><span class="p">(</span><span class="n">full_layer_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_style_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;set the default style for a layer</span>
+
+<span class="sd">    :param full_layer_name: str: the layer name including the workspace_name,</span>
+<span class="sd">        such as workspace_name:layer_name</span>
+<span class="sd">    :param full_style_name: str: the style name including the workspace_name,</span>
+<span class="sd">        such as workspace_name:style_name</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+    <span class="c1"># headers = {&quot;content-type&quot;: &quot;text/xml&quot;}</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/layers/</span><span class="si">{</span><span class="n">full_layer_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="c1"># style_xml = (</span>
+    <span class="c1">#    f&quot;&lt;layer&gt;&lt;defaultStyle&gt;&lt;name&gt;{full_style_name}&lt;/name&gt;&lt;/defaultStyle&gt;&lt;/layer&gt;&quot;</span>
+    <span class="c1"># )</span>
+    <span class="c1"># print(json_style)</span>
+    <span class="c1"># json_style = {&quot;defaultStyle&quot;: {&quot;name&quot;: full_style_name}}</span>
+    <span class="n">json_style</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;layer&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;defaultStyle&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">full_style_name</span><span class="p">}},</span>
+    <span class="p">}</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_style</span><span class="p">),</span>
+        <span class="c1"># data=style_xml,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The default style for layer </span><span class="si">{</span><span class="n">full_layer_name</span><span class="w"> </span><span class="si">}</span><span class="s2"> has been set to </span><span class="si">{</span><span class="n">full_style_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unable to set default style </span><span class="si">{</span><span class="n">full_style_name</span><span class="si">}</span><span class="s2"> for layer </span><span class="si">{</span><span class="n">full_layer_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_additional_style"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.add_additional_style">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">add_additional_style</span><span class="p">(</span><span class="n">full_layer_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_style_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an additional style to a layer.</span>
+
+<span class="sd">    :param full_layer_name: str: the layer name including the workspace_name,</span>
+<span class="sd">        such as workspace_name:layer_name</span>
+<span class="sd">    :param full_style_name: str: the style name including the workspace_name,</span>
+<span class="sd">        such as workspace_name:style_name</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/layers/</span><span class="si">{</span><span class="n">full_layer_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/xml&quot;</span><span class="p">}</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;&lt;layer&gt;&lt;styles&gt;&lt;style&gt;&lt;name&gt;</span><span class="si">{</span><span class="n">full_style_name</span><span class="si">}</span><span class="s2">&lt;/name&gt;&lt;/style&gt;&lt;/styles&gt;&lt;/layer&gt;&quot;</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The additional style </span><span class="si">{</span><span class="n">full_style_name</span><span class="si">}</span><span class="s2"> for layer </span><span class="si">{</span><span class="n">full_layer_name</span><span class="w"> </span><span class="si">}</span><span class="s2"> has been added. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unable to add additional style </span><span class="si">{</span><span class="n">full_style_name</span><span class="si">}</span><span class="s2"> for layer </span><span class="si">{</span><span class="n">full_layer_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_layer_styles"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_layer_styles">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">get_layer_styles</span><span class="p">(</span><span class="n">full_layer_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the styles associated with a layer</span>
+
+<span class="sd">    :param full_layer_name: str: the layer name including the workspace_name,</span>
+<span class="sd">        such as workspace_name:layer_name</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/layers/</span><span class="si">{</span><span class="n">full_layer_name</span><span class="si">}</span><span class="s2">/styles&quot;</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># print(r.content)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;style&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;styles&quot;</span><span class="p">]:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;styles&quot;</span><span class="p">][</span><span class="s2">&quot;style&quot;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_layer"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_layer">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">get_layer</span><span class="p">(</span><span class="n">layer_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the definition of the layer</span>
+
+<span class="sd">    :param layer_name: str: the name of the layer to retrieve</span>
+<span class="sd">    :param workspace:  (Default value = None) if the workspace name is not given,</span>
+<span class="sd">        return the first layer which matches the given layer name. This is odd!</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/layers/</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/layers/</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># print(r.json())</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_layers"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_layers">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">get_layers</span><span class="p">(</span><span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all the layers in geoserver if workspace name is not given.</span>
+<span class="sd">        Return all the layers in a workspace if workspace name is given.</span>
+
+<span class="sd">    :param workspace:  (Default value = None) If workspace name is not given,</span>
+<span class="sd">        the function will return all the layers in the geoserver.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/layers&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/layers&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># print(r.json())</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;layer&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;layers&quot;</span><span class="p">]:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;layers&quot;</span><span class="p">][</span><span class="s2">&quot;layer&quot;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="delete_layer"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.delete_layer">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">delete_layer</span><span class="p">(</span><span class="n">layer_name</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a layer by name</span>
+
+<span class="sd">    :param layer_name: the name of the layer which you would like to delete</span>
+<span class="sd">    :param workspace:  (Default value = None) If the workspace name is not given,</span>
+<span class="sd">        delete the first layer which matches the given layer name. This is odd!</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># username, passwd, server_url = get_cfg()</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;recurse&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/layers/</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/layers/</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;layer:</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2"> has been deleted!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to delete layer:</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="get_styles"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_styles">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">get_styles</span><span class="p">(</span><span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all global styles or all styles in a workspace</span>
+
+<span class="sd">    :param workspace:  (Default value = None) If the workspace name is not given,</span>
+<span class="sd">        all global styles will be returned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/styles&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/styles&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># print(r.json())</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;style&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;styles&quot;</span><span class="p">]:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;styles&quot;</span><span class="p">][</span><span class="s2">&quot;style&quot;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_all_workspaces"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_all_workspaces">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">get_all_workspaces</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the names of all workspaces&quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># print(r.json())</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;workspace&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;workspaces&quot;</span><span class="p">]:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;workspaces&quot;</span><span class="p">][</span><span class="s2">&quot;workspace&quot;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_workspace"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_workspace">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">get_workspace</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the definition of a workspace</span>
+
+<span class="sd">    :param name: the name of the workspace in which you are interested</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># print(r.json())</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_datastores"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.geoserver.get_datastores">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">get_datastores</span><span class="p">(</span><span class="n">workspace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get datastores in a workspace</span>
+
+<span class="sd">    :param workspace: the name of the workspace in which you are interested</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/datastores&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># print(r.json())</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;dataStore&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dataStores&quot;</span><span class="p">]:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dataStores&quot;</span><span class="p">][</span><span class="s2">&quot;dataStore&quot;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Michael Chin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
