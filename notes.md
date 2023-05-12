@@ -22,3 +22,11 @@
 - `make html`
 
 ⚠️You need to re-install the geoserver_pyadm, otherwise the sphinx will keep using the installed stable version(old code).
+
+#### Publish to PyPI
+
+- `pip install build twine`
+- `python -m build`
+- `twine check dist/*`
+- `twine upload -r testpypi dist/*`
+- `twine upload dist/*`
