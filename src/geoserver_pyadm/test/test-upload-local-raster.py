@@ -11,7 +11,7 @@ geoserver.create_workspace(ws_name_2)
 
 # make sure you have unzip installed
 os.system(
-    "unzip rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff.zip -d rasters"
+    "unzip -o rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff.zip -d rasters"
 )
 
 # upload the local raster zip file
@@ -35,5 +35,13 @@ r = geoserver.upload_raster(
 )
 print(r)
 
+os.system("rm -f rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff.zip ")
+
 r = geoserver.upload_raster_folder(ws_name_2, "rasters")
 print(r)
+
+os.system(
+    "zip -oj rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff.zip rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff"
+)
+
+os.system("rm -f rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff")
