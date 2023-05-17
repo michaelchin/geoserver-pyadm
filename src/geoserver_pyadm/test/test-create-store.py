@@ -9,7 +9,7 @@ print(r)
 
 # create a store from a folder on geoserver(relative path to "data_dir")
 # you can publish the layers in the folder later via web page or api
-r = geoserver.create_store(ws_name, store_name_1, "data/nyc")
+r = geoserver.create_store(ws_name, store_name_1, "data/nyc", is_dir=True)
 print(r)
 
 # create a store from a shapefile on geoserver(relative path to "data_dir")

@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 import tempfile
 import zipfile
@@ -161,6 +162,93 @@ def upload_style(style_name, file_path, workspace=None):
 
 
 @auth
+def upload_zip(workspace_name, store_name, file_path, format="shp", configure="none"):
+    """Upload a local .zip file which contains shapefile.
+        warning: when use configure="all", all the shapefiles in the datastore will
+        be published(not only the one you just uploaded)
+
+    :param workspace_name: the name of destine workspace in which you would like to
+        upload the shapefile
+    :param store_name: the name of datastore in which you would like to upload the shapefile
+    :param file_path: the local file path to your shapefile(.zip)
+    :param format: support 'shp' and 'gpkg'
+    :param configure: this parameter takes three possible values
+        "first" —- (Default) Only setup the first feature type available in the data store.
+        "none"  —- Do not configure any feature types.
+        "all"   —- Configure all feature types.
+
+    """
+    headers = {
+        "Content-type": "application/zip",
+        "Accept": "application/xml",
+    }
+
+    file_name = Path(file_path).stem
+    url = (
+        f"{a.server_url}/rest/workspaces/{workspace_name}/datastores"
+        + f"/{store_name}/file.{format}?filename={file_name}&update=overwrite&configure={configure}"
+    )
+
+    with open(file_path, "rb") as f:
+        r = requests.put(
+            url,
+            data=f.read(),
+            auth=(a.username, a.passwd),
+            headers=headers,
+        )
+    return r
+
+
+def upload_geopackage_zip(workspace_name, store_name, file_path, configure="none"):
+    """Upload a local .zip file which contains geopackage file.
+        warning: when use configure="all", all the shapefiles in the datastore will
+        be published(not only the one you just uploaded)
+
+    :param workspace_name: the name of destine workspace in which you would like to
+        upload the shapefile
+    :param store_name: the name of datastore in which you would like to upload the shapefile
+    :param file_path: the local file path to your geopackage(.zip)
+    :param configure: this parameter takes three possible values
+        "first" —- (Default) Only setup the first feature type available in the data store.
+        "none"  —- Do not configure any feature types.
+        "all"   —- Configure all feature types.
+
+    """
+    r = upload_zip(workspace_name, store_name, file_path, "gpkg", configure)
+
+    # it seems there is bug in geoserver 2.21
+    # I have to update the "database" path to make the store valid
+    headers = {
+        "Content-type": "application/json",
+    }
+
+    cfg = {
+        "dataStore": {
+            "name": store_name,
+            "type": "GeoPackage",
+            "connectionParameters": {
+                "entry": [
+                    {
+                        "@key": "database",
+                        "$": f"file:data/{workspace_name}/{store_name}/{os.path.basename(file_path)[:-4]}",
+                    },
+                    {"@key": "dbtype", "$": "geopkg"},
+                ]
+            },
+        }
+    }
+
+    url = f"{a.server_url}/rest/workspaces/{workspace_name}/datastores/{store_name}/"
+
+    requests.put(
+        url,
+        data=json.dumps(cfg),
+        auth=(a.username, a.passwd),
+        headers=headers,
+    )
+    return r
+
+
 def upload_shapefile_zip(workspace_name, store_name, file_path, configure="none"):
     """Upload a local .zip file which contains shapefile.
         warning: when use configure="all", all the shapefiles in the datastore will
@@ -176,27 +264,7 @@ def upload_shapefile_zip(workspace_name, store_name, file_path, configure="none"
         "all"   —- Configure all feature types.
 
     """
-    # a.username, a.passwd, a.server_url = get_cfg()
-
-    headers = {
-        "Content-type": "application/zip",
-        "Accept": "application/xml",
-    }
-
-    file_name = Path(file_path).stem
-    url = (
-        f"{a.server_url}/rest/workspaces/{workspace_name}/datastores"
-        + f"/{store_name}/file.shp?filename={file_name}&update=overwrite&configure={configure}"
-    )
-
-    with open(file_path, "rb") as f:
-        r = requests.put(
-            url,
-            data=f.read(),
-            auth=(a.username, a.passwd),
-            headers=headers,
-        )
-    return r
+    return upload_zip(workspace_name, store_name, file_path, "shp", configure)
 
 
 def upload_shapefile(workspace_name, store_name, file_path, configure="none"):
@@ -233,9 +301,71 @@ def upload_shapefile(workspace_name, store_name, file_path, configure="none"):
             ) as tmp_zip:
                 for f in files:
                     tmp_zip.write(f, os.path.basename(f))
-            t = f"{tmp_dir}/{file_name}.zip"
+
             return upload_shapefile_zip(
                 workspace_name, store_name, f"{tmp_dir}/{file_name}.zip", configure
+            )
+    else:
+        raise Exception(f"Unsupported file extension: {file_path}")
+
+
+def upload_geopackage(workspace_name, store_name, file_path, configure="none"):
+    """Upload a local geopackage file.
+
+        warning: when use configure="all", all the shapefiles in the datastore will
+        be published(not only the one you just uploaded)
+
+    :param workspace_name: the name of destine workspace in which you would like to
+        upload the shapefile
+    :param store_name: the name of datastore in which you would like to upload the shapefile
+    :param file_path: the local path to your geopackge file
+    :param configure: this parameter takes three possible values
+        first—(Default) Only setup the first feature type available in the data store.
+        none—Do not configure any feature types.
+        all—Configure all feature types.
+
+    """
+    p = Path(file_path)
+    file_name = p.stem
+    ext = p.suffix
+
+    if ext == ".zip":
+        return upload_zip(workspace_name, store_name, file_path, "gpkg", configure)
+    elif ext == ".gpkg":
+        """
+        # upload geopackage file without compression
+        headers = {
+            "Content-type": "application/x-sqlite3",
+            "Accept": "application/xml",
+        }
+
+        url = (
+            f"{a.server_url}/rest/workspaces/{workspace_name}/datastores"
+            + f"/{store_name}/file.gpkg?filename={file_name}{ext}&update=overwrite&configure={configure}"
+        )
+
+        with open(file_path, "rb") as f:
+            r = requests.put(
+                url,
+                data=f.read(),
+                auth=(a.username, a.passwd),
+                headers=headers,
+            )"""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            files = glob.glob(f"{file_path[:-5]}.*")
+            with zipfile.ZipFile(
+                f"{tmp_dir}/{file_name}{ext}.zip",
+                mode="w",
+                compression=zipfile.ZIP_DEFLATED,
+                compresslevel=9,
+            ) as tmp_zip:
+                for f in files:
+                    tmp_zip.write(f, os.path.basename(f))
+            return upload_geopackage_zip(
+                workspace_name,
+                store_name,
+                f"{tmp_dir}/{file_name}{ext}.zip",
+                configure,
             )
     else:
         raise Exception(f"Unsupported file extension: {file_path}")

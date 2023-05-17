@@ -1,4 +1,4 @@
-import requests
+import requests, json
 
 from . import _auth as a
 from ._auth import auth
@@ -121,7 +121,7 @@ def delete_layer(layer_name, workspace=None):
         delete all layers with the given name.
 
     """
-    payload = {"recurse": "true", "quietOnNotFound": "true"}
+    payload = {"recurse": "True", "quietOnNotFound": "True"}
 
     if workspace:
         url = f"{a.server_url}/rest/workspaces/{workspace}/layers/{layer_name}"
@@ -176,3 +176,36 @@ def get_layer_styles(full_layer_name: str):
         return ret
     else:
         return None
+
+
+@auth
+def publish_geopackage_layer(
+    workspace_name, store_name, layer_name, geom_type="polygon"
+):
+    """Publish a geopackage layer in the data store
+
+    :param workspace_name: the name of the workspace in which the data store is
+    :param store_name: the name of the data store in which the layer you would like to publish is
+    :param layer_name: the name of geopackage layer which you would like to publish.
+
+    """
+    url = f"{a.server_url}/rest/workspaces/{workspace_name}/datastores/{store_name}/featuretypes/"
+
+    layer_cfg = {
+        "featureType": {
+            "name": f"{layer_name}_{geom_type}",
+            "nativeName": f"{layer_name}_{geom_type}",
+            "title": f"{layer_name}_{geom_type}",
+        }
+    }
+    headers = {"content-type": "application/json"}
+
+    r = requests.post(
+        url,
+        data=json.dumps(layer_cfg),
+        auth=(a.username, a.passwd),
+        headers=headers,
+    )
+    if r.status_code not in [200, 201]:
+        print(f"Unable to publish layer {layer_name}. {r.status_code}, {r.content}")
+    return r

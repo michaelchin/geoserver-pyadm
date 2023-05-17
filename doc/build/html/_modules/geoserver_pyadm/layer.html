@@ -67,7 +67,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for geoserver_pyadm.layer</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span></span><span class="kn">import</span> <span class="nn">requests</span><span class="o">,</span> <span class="nn">json</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_auth</span> <span class="k">as</span> <span class="n">a</span>
 <span class="kn">from</span> <span class="nn">._auth</span> <span class="kn">import</span> <span class="n">auth</span>
@@ -190,7 +190,7 @@
 <span class="sd">        delete all layers with the given name.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;recurse&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;quietOnNotFound&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;recurse&quot;</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;quietOnNotFound&quot;</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span><span class="p">}</span>
 
     <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/layers/</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -245,6 +245,39 @@
         <span class="k">return</span> <span class="n">ret</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="publish_geopackage_layer"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.layer.publish_geopackage_layer">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">publish_geopackage_layer</span><span class="p">(</span>
+    <span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="s2">&quot;polygon&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Publish a geopackage layer in the data store</span>
+
+<span class="sd">    :param workspace_name: the name of the workspace in which the data store is</span>
+<span class="sd">    :param store_name: the name of the data store in which the layer you would like to publish is</span>
+<span class="sd">    :param layer_name: the name of geopackage layer which you would like to publish.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/datastores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/featuretypes/&quot;</span>
+
+    <span class="n">layer_cfg</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;featureType&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">geom_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nativeName&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">geom_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">geom_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">layer_cfg</span><span class="p">),</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">passwd</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to publish layer </span><span class="si">{</span><span class="n">layer_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
 </pre></div>
 
            </div>

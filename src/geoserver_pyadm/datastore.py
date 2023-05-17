@@ -1,13 +1,20 @@
 import json
+import os
 
 import requests
 
 from . import _auth as a
 from ._auth import auth
+from ._exceptions import (
+    FailedToCreateDatastore,
+    DatastoreAlreadyExists,
+    FailedToDeleteDatastore,
+    DatastoreDoesNotExists,
+)
 
 
 @auth
-def create_store(workspace_name, store_name, file_path):
+def create_store(workspace_name, store_name, file_path, is_dir=False):
     """Create a datastore from a folder or .shp on the server.
         The folder or .shp must have already been on the server.
 
@@ -17,23 +24,42 @@ def create_store(workspace_name, store_name, file_path):
     :param file_path: the file_path on the geoserver, relative to the "data_dir"
         (can be a path or a .shp file).
         You can find the "Data directory"/ "data_dir" in the "server status" page.
+    :param is_dir: flag to indicate if the store is a shapefile directory
 
     """
-    # a.username, a.passwd, a.server_url = get_cfg()
-    data_url = f"<url>file:{file_path}</url><filetype>shapefile</filetype>"
-    data = f"<dataStore><name>{store_name}</name><connectionParameters>{data_url}</connectionParameters></dataStore>"
-    headers = {"content-type": "text/xml"}
+    if is_dir:
+        store_type = "Directory of spatial files (shapefiles)"
+    else:
+        store_type = "shapefile"
+
+    cfg = {
+        "dataStore": {
+            "name": store_name,
+            "type": store_type,
+            "connectionParameters": {
+                "entry": [
+                    {"@key": "filetype", "$": "shapefile"},
+                    {"@key": "url", "$": f"file:{file_path}"},
+                    {"@key": "fstype", "$": "shape"},
+                ]
+            },
+        }
+    }
+
+    headers = {"content-type": "application/json"}
 
     url = f"{a.server_url}/rest/workspaces/{workspace_name}/datastores"
-    r = requests.post(url, data, auth=(a.username, a.passwd), headers=headers)
+
+    r = requests.post(
+        url, data=json.dumps(cfg), auth=(a.username, a.passwd), headers=headers
+    )
 
     if r.status_code in [200, 201]:
-        print(f"Datastore {store_name} was created/updated successfully")
-
+        print(f"Datastore {store_name} has been created successfully.")
+    elif "already exists" in r.text:
+        raise DatastoreAlreadyExists(store_name)
     else:
-        print(
-            f"Unable to create datastore {store_name}. Status code: {r.status_code}, { r.content}"
-        )
+        raise FailedToCreateDatastore(store_name)
     return r
 
 
@@ -47,14 +73,15 @@ def delete_store(workspace_name, store_name):
     """
     payload = {"recurse": "true"}
     url = f"{a.server_url}/rest/workspaces/{workspace_name}/datastores/{store_name}"
+
     r = requests.delete(url, auth=(a.username, a.passwd), params=payload)
 
     if r.status_code == 200:
-        print(f"Datastore {store_name} has been deleted.")
+        print(f"Datastore {workspace_name}:{store_name} has been deleted.")
     elif r.status_code == 404:
-        print(f"Datastore {store_name} does not exist.")
+        raise DatastoreDoesNotExists(f"{workspace_name}:{store_name}")
     else:
-        print(f"Error: {r.status_code} {r.content}")
+        raise FailedToDeleteDatastore(f"{workspace_name}:{store_name}")
     return r
 
 
@@ -117,4 +144,50 @@ def create_coveragestore(workspace_name, store_name, file_path):
         print(
             f"Unable to create datastore {store_name}. Status code: {r.status_code}, { r.content}"
         )
+    return r
+
+
+@auth
+def create_geopackage_store(workspace_name, store_name, file_path):
+    """Create a datastore from a geopackage file.
+        The geopackage file must have already been on the server.
+
+    :param workspace_name: the name of destine workspace in which you would like to
+        create the data store
+    :param store_name: the name of data store which you would like to create
+    :param file_path: the file_path on the geoserver, relative to the "data_dir"
+        (can be a path or a .shp file).
+        You can find the "Data directory"/ "data_dir" in the "server status" page.
+
+    """
+    cfg = {
+        "dataStore": {
+            "name": store_name,
+            "type": "GeoPackage",
+            "connectionParameters": {
+                "entry": [
+                    {
+                        "@key": "database",
+                        "$": f"file:{file_path}",
+                    },
+                    {"@key": "dbtype", "$": "geopkg"},
+                ]
+            },
+        }
+    }
+
+    headers = {"content-type": "application/json"}
+
+    url = f"{a.server_url}/rest/workspaces/{workspace_name}/datastores"
+
+    r = requests.post(
+        url, data=json.dumps(cfg), auth=(a.username, a.passwd), headers=headers
+    )
+
+    if r.status_code in [200, 201]:
+        print(f"Datastore {store_name} has been created successfully.")
+    elif "already exists" in r.text:
+        raise DatastoreAlreadyExists(store_name)
+    else:
+        raise FailedToCreateDatastore(store_name)
     return r

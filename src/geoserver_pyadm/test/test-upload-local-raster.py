@@ -45,3 +45,9 @@ os.system(
 )
 
 os.system("rm -f rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff")
+
+if len(sys.argv) > 1:
+    print(sys.argv[1])
+    if sys.argv[1] == "clean":
+        geoserver.delete_workspace(ws_name_1)
+        geoserver.delete_workspace(ws_name_2)

@@ -46,6 +46,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.datastore">geoserver_pyadm.datastore module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_coveragestore"><code class="docutils literal notranslate"><span class="pre">create_coveragestore()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_geopackage_store"><code class="docutils literal notranslate"><span class="pre">create_geopackage_store()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_store"><code class="docutils literal notranslate"><span class="pre">create_store()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.delete_store"><code class="docutils literal notranslate"><span class="pre">delete_store()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.get_datastores"><code class="docutils literal notranslate"><span class="pre">get_datastores()</span></code></a></li>
@@ -63,6 +64,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.get_layer"><code class="docutils literal notranslate"><span class="pre">get_layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.get_layer_styles"><code class="docutils literal notranslate"><span class="pre">get_layer_styles()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.get_layers"><code class="docutils literal notranslate"><span class="pre">get_layers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.publish_geopackage_layer"><code class="docutils literal notranslate"><span class="pre">publish_geopackage_layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.publish_layer"><code class="docutils literal notranslate"><span class="pre">publish_layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.publish_raster_layer"><code class="docutils literal notranslate"><span class="pre">publish_raster_layer()</span></code></a></li>
 </ul>
@@ -77,12 +79,15 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.upload">geoserver_pyadm.upload module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_geopackage"><code class="docutils literal notranslate"><span class="pre">upload_geopackage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_geopackage_zip"><code class="docutils literal notranslate"><span class="pre">upload_geopackage_zip()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_raster"><code class="docutils literal notranslate"><span class="pre">upload_raster()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_raster_folder"><code class="docutils literal notranslate"><span class="pre">upload_raster_folder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_shapefile"><code class="docutils literal notranslate"><span class="pre">upload_shapefile()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_shapefile_folder"><code class="docutils literal notranslate"><span class="pre">upload_shapefile_folder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_shapefile_zip"><code class="docutils literal notranslate"><span class="pre">upload_shapefile_zip()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_style"><code class="docutils literal notranslate"><span class="pre">upload_style()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_zip"><code class="docutils literal notranslate"><span class="pre">upload_zip()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.workspace">geoserver_pyadm.workspace module</a><ul>
@@ -148,8 +153,29 @@ You can find the “Data directory”/ “data_dir” in the “server status”
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.datastore.create_geopackage_store">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_geopackage_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_geopackage_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_geopackage_store" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Create a datastore from a geopackage file.</dt><dd><p>The geopackage file must have already been on the server.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+create the data store</p></li>
+<li><p><strong>store_name</strong> – the name of data store which you would like to create</p></li>
+<li><p><strong>file_path</strong> – the file_path on the geoserver, relative to the “data_dir”
+(can be a path or a .shp file).
+You can find the “Data directory”/ “data_dir” in the “server status” page.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="geoserver_pyadm.datastore.create_store">
-<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_store" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_store" title="Permalink to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Create a datastore from a folder or .shp on the server.</dt><dd><p>The folder or .shp must have already been on the server.</p>
 </dd>
@@ -163,6 +189,7 @@ create the data store</p></li>
 <li><p><strong>file_path</strong> – the file_path on the geoserver, relative to the “data_dir”
 (can be a path or a .shp file).
 You can find the “Data directory”/ “data_dir” in the “server status” page.</p></li>
+<li><p><strong>is_dir</strong> – flag to indicate if the store is a shapefile directory</p></li>
 </ul>
 </dd>
 </dl>
@@ -274,6 +301,21 @@ such as workspace_name:layer_name</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>workspace</strong> – (Default value = None) If workspace name is not given,
 the function will return all the layers in the geoserver.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.layer.publish_geopackage_layer">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.layer.</span></span><span class="sig-name descname"><span class="pre">publish_geopackage_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'polygon'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/layer.html#publish_geopackage_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.layer.publish_geopackage_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Publish a geopackage layer in the data store</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of the workspace in which the data store is</p></li>
+<li><p><strong>store_name</strong> – the name of the data store in which the layer you would like to publish is</p></li>
+<li><p><strong>layer_name</strong> – the name of geopackage layer which you would like to publish.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -408,6 +450,54 @@ such as workspace_name:style_name</p></li>
 </section>
 <section id="module-geoserver_pyadm.upload">
 <span id="geoserver-pyadm-upload-module"></span><h2>geoserver_pyadm.upload module<a class="headerlink" href="#module-geoserver_pyadm.upload" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_geopackage">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_geopackage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_geopackage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_geopackage" title="Permalink to this definition"></a></dt>
+<dd><p>Upload a local geopackage file.</p>
+<blockquote>
+<div><p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefile</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
+<li><p><strong>file_path</strong> – the local path to your geopackge file</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+first—(Default) Only setup the first feature type available in the data store.
+none—Do not configure any feature types.
+all—Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_geopackage_zip">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_geopackage_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_geopackage_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_geopackage_zip" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Upload a local .zip file which contains geopackage file.</dt><dd><p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefile</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
+<li><p><strong>file_path</strong> – the local file path to your geopackage(.zip)</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+“first” —- (Default) Only setup the first feature type available in the data store.
+“none”  —- Do not configure any feature types.
+“all”   —- Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_raster">
 <span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverage_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geotiff'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_raster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_raster" title="Permalink to this definition"></a></dt>
@@ -549,6 +639,31 @@ upload the shapefile</p></li>
 <li><p><strong>file_path</strong> – the local path to the .sld file</p></li>
 <li><p><strong>workspace</strong> – (Default value = None) the name of the workspace.
 If the workspace name is not given, the new style will be a global one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_zip">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'shp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_zip" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Upload a local .zip file which contains shapefile.</dt><dd><p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefile</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
+<li><p><strong>file_path</strong> – the local file path to your shapefile(.zip)</p></li>
+<li><p><strong>format</strong> – support ‘shp’ and ‘gpkg’</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+“first” —- (Default) Only setup the first feature type available in the data store.
+“none”  —- Do not configure any feature types.
+“all”   —- Configure all feature types.</p></li>
 </ul>
 </dd>
 </dl>
