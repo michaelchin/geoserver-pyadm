@@ -1,1 +1,1 @@
-include src/geoserver-pyadm/*.toml
+include src/geoserver_pyadm/*.toml

@@ -9,3 +9,4 @@ python test-delete-workspace.py
 
 python test-upload-local-raster.py clean
 python test-upload-geopackage.py clean
+python test-publish-shapefiles-on-server.py clean
