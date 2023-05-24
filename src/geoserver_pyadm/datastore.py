@@ -14,7 +14,7 @@ from ._exceptions import (
 
 
 @auth
-def create_store(workspace_name, store_name, file_path, is_dir=False):
+def create_datastore(workspace_name, store_name, file_path, is_dir=False):
     """Create a datastore from a folder or .shp on the server.
         The folder or .shp must have already been on the server.
 
@@ -64,7 +64,7 @@ def create_store(workspace_name, store_name, file_path, is_dir=False):
 
 
 @auth
-def delete_store(workspace_name, store_name):
+def delete_datastore(workspace_name, store_name):
     """Delete a data store by name.
 
     :param workspace_name: the name of workspace in which the data store is
@@ -106,45 +106,6 @@ def get_datastores(workspace):
         return ret
     else:
         return None
-
-
-@auth
-def create_coveragestore(workspace_name, store_name, file_path):
-    """Create a coverage store from a raster file on the geoserver.
-
-    :param workspace_name: the name of workspace
-    :param store_name: the name of the coverage store which you would like to create
-    :param file_path: the file_path on the geoserver, relative to the "data_dir"
-        You can find the "Data directory"/ "data_dir" in the "server status" page.
-
-    """
-    # a.username, a.passwd, a.server_url = get_cfg()
-    cfg = {
-        "coverageStore": {
-            "name": store_name,
-            "type": "GeoTIFF",
-            "enabled": True,
-            "_default": False,
-            "workspace": {"name": workspace_name},
-            "url": f"file:{file_path}",
-        }
-    }
-
-    headers = {"content-type": "application/json"}
-
-    url = f"{a.server_url}/rest/workspaces/{workspace_name}/coveragestores"
-    r = requests.post(
-        url, data=json.dumps(cfg), auth=(a.username, a.passwd), headers=headers
-    )
-
-    if r.status_code in [200, 201]:
-        print(f"Datastore {store_name} was created/updated successfully")
-
-    else:
-        print(
-            f"Unable to create datastore {store_name}. Status code: {r.status_code}, { r.content}"
-        )
-    return r
 
 
 @auth

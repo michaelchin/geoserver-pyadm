@@ -399,3 +399,22 @@ def upload_shapefile_folder(workspace_name, store_name, folder_path, configure="
         upload_shapefile(workspace_name, store_name, f, configure)
         print(f)
     return "Done"
+
+
+@auth
+def upload_image_mosaic(workspace_name, store_name, file_path):
+    headers = {
+        "Content-type": "application/zip",
+        "Accept": "application/json",
+    }
+
+    url = f"{a.server_url}/rest/workspaces/{workspace_name}/coveragestores/{store_name}/file.imagemosaic"
+
+    with open(file_path, "rb") as f:
+        r = requests.put(
+            url,
+            data=f.read(),
+            auth=(a.username, a.passwd),
+            headers=headers,
+        )
+    return r

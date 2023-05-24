@@ -18,6 +18,7 @@ from .upload import (
     upload_style,
     upload_geopackage,
     upload_geopackage_zip,
+    upload_image_mosaic,
 )
 
 from .info import get_global_settings, get_status, get_version
@@ -34,9 +35,8 @@ from .layer import (
 
 from .datastore import (
     get_datastores,
-    create_coveragestore,
-    create_store,
-    delete_store,
+    create_datastore,
+    delete_datastore,
     create_geopackage_store,
 )
 
@@ -47,4 +47,15 @@ from .style import (
     add_style,
     delete_style,
     set_default_style,
+)
+
+from .coveragestore import (
+    get_coverage_stores,
+    get_coverage_store_info,
+    reindex_existing_image_mosaic_store,
+    add_raster_to_image_mosaic_store,
+    get_rasters_in_image_mosaic_store,
+    delete_raster_from_image_mosaic_store,
+    delete_coverage_store,
+    create_coverage_store,
 )

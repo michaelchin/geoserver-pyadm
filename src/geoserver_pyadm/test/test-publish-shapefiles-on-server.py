@@ -21,7 +21,9 @@ print(r)
 # create a store from a folder on geoserver(relative path to "data_dir")
 # the folder and files were uploaded via code above
 # and publish a layer from one of the shapefiles in the folder
-r = geoserver.create_store(ws_name_2, store_name_2, f"data/{ws_name_1}/{store_name_1}")
+r = geoserver.create_datastore(
+    ws_name_2, store_name_2, f"data/{ws_name_1}/{store_name_1}"
+)
 print(r)
 r = geoserver.publish_layer(ws_name_2, store_name_2, "coastline-0-Ma-test")
 print(r)

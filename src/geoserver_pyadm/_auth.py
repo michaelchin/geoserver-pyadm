@@ -60,7 +60,7 @@ def get_cfg():
         username, passwd, server_url = get_env()
         # still failed? inform caller something is wrong
         if not all([username, passwd, server_url]):
-            raise (
+            raise Exception(
                 "set env variables GEOSERVER_USERNAME, GEOSERVER_PASSWORD, GEOSERVER_URL and then retry"
             )
     return username, passwd, server_url
