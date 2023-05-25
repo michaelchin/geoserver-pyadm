@@ -52,12 +52,10 @@ from .style import (
 from .coveragestore import (
     get_coverage_stores,
     get_coverage_store_info,
-    reindex_existing_image_mosaic_store,
-    add_raster_to_image_mosaic_store,
-    get_rasters_in_image_mosaic_store,
-    delete_raster_from_image_mosaic_store,
     delete_coverage_store,
     create_coverage_store,
     create_coverage,
-    enable_time_dimension,
+    get_coverages,
 )
+
+from . import imagemosaic
