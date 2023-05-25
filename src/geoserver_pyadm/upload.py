@@ -402,19 +402,36 @@ def upload_shapefile_folder(workspace_name, store_name, folder_path, configure="
 
 
 @auth
-def upload_image_mosaic(workspace_name, store_name, file_path):
+def upload_image_mosaic(workspace_name, store_name, file_path, configure="none"):
+    """Upload a zip file which contains image mosaic configuration files, such as indexer.xml, datastore.properties,etc
+    The zip file may also contains the .nc files. See test/rasters/paleodem.zip for example.
+    A new image mosaic store will be created if everything goes well.
+
+    :param workspace_name: workspace name
+    :param store_name: coverage store name
+    :param file_path: the location of the local .zip file
+    :param configure: this parameter takes three possible values
+        "first" —- (Default) Only setup the first feature type available in the data store.
+        "none"  —- Do not configure any feature types.
+        "all"   —- Configure all feature types.
+    """
     headers = {
         "Content-type": "application/zip",
         "Accept": "application/json",
     }
-
+    params = {"configure": configure}
     url = f"{a.server_url}/rest/workspaces/{workspace_name}/coveragestores/{store_name}/file.imagemosaic"
 
     with open(file_path, "rb") as f:
         r = requests.put(
             url,
             data=f.read(),
+            params=params,
             auth=(a.username, a.passwd),
             headers=headers,
         )
+    if r.status_code in [200, 201]:
+        print(f"Image mosaic store {store_name} is created.")
+    else:
+        print(f"Failed to create image mosaic store {store_name}.")
     return r

@@ -57,4 +57,6 @@ from .coveragestore import (
     delete_raster_from_image_mosaic_store,
     delete_coverage_store,
     create_coverage_store,
+    create_coverage,
+    enable_time_dimension,
 )
