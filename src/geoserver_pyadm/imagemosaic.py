@@ -1,5 +1,4 @@
 import json
-import os
 
 import requests
 
@@ -8,25 +7,32 @@ from ._auth import auth
 
 
 @auth
-def reindex_existing_image_mosaic_store(workspace_name, store_name, path):
-    """ """
+def reindex_image_mosaic_store(workspace_name, store_name, path):
+    """Reindex an image mosaic store. Re-populate the store with the files in the given path.
+
+    :param workspace_name: workspace name
+    :param store_name: image mosaic store name
+    :param path: the path which contains the raster files
+
+    """
 
     url = f"{a.server_url}/rest/workspaces/{workspace_name}/coveragestores/{store_name}/external.imagemosaic"
     headers = {"Content-type": "text/plain"}
 
     r = requests.post(url, auth=(a.username, a.passwd), data=path, headers=headers)
 
-    if r.status_code in [200, 201]:
-        return r.json()
+    if r.status_code in [200, 201, 202]:
+        print(f"Store {store_name} has been reindexed.")
     else:
         print(r.text)
         print(r.status_code)
-        return None
+    return r
 
 
 @auth
 def add_raster_to_image_mosaic_store(workspace_name, store_name, filepath):
     """Add a new raster file into the image mosaic store. The raster file must be in the server.
+        Geoserver calls this process "harvesting".
 
     :param workspace_name: workspace name
     :param store_name: image mosaic store name
@@ -47,45 +53,65 @@ def add_raster_to_image_mosaic_store(workspace_name, store_name, filepath):
 
 
 @auth
-def get_rasters_in_image_mosaic_store(workspace_name, store_name, coverage_name):
-    """"""
+def get_rasters_in_coverage(
+    workspace_name, store_name, coverage_name, return_details=False
+):
+    """Return all the granules in a coverage within an image mosaic store.
+
+    :param workspace_name: workspace name
+    :param store_name: image mosaic store name
+    :param coverage_name: the coverage name
+    :param return_details: if True, return all details about the granules
+        if False, only return id and location.
+
+    """
 
     url = f"{a.server_url}/rest/workspaces/{workspace_name}/coveragestores/{store_name}/coverages/{coverage_name}/index/granules.json"
-    print(url)
+
     r = requests.get(url, auth=(a.username, a.passwd))
 
     if r.status_code in [200, 201]:
         data = r.json()
-        ret = [
-            {
-                "id": d["id"],
-                # "time": d["properties"]["time"],
-                # "elevation": d["properties"]["elevation"],
-                "location": d["properties"]["location"],
-            }
-            for d in data["features"]
-        ]
+        if return_details:
+            ret = data
+        else:
+            ret = [
+                {
+                    "id": d["id"],
+                    # "time": d["properties"]["time"],
+                    # "elevation": d["properties"]["elevation"],
+                    "location": d["properties"]["location"],
+                }
+                for d in data["features"]
+            ]
         return ret
     else:
         print(r.text)
         print(r.status_code)
-        return None
+        print(url)
+        return []
 
 
 @auth
-def delete_raster_from_image_mosaic_store(
-    workspace_name, store_name, coverage_name, id
-):
+def delete_raster_from_coverage(workspace_name, store_name, coverage_name, id):
+    """Delete a raster from a coverage within an image mosaic store
+
+    :param workspace_name: workspace name
+    :param store_name: image mosaic store name
+    :param coverage_name: the coverage name
+    :param id: the raster id which can be retrieved by calling get_rasters_in_coverage()
+
+    """
     url = f"{a.server_url}/rest/workspaces/{workspace_name}/coveragestores/{store_name}/coverages/{coverage_name}/index/granules/{id}.xml"
     print(url)
     r = requests.delete(url, auth=(a.username, a.passwd))
 
     if r.status_code in [200, 201]:
-        return id
+        print(f"Deleted raster {id} from coverage {coverage_name}")
     else:
         print(r.text)
         print(r.status_code)
-        return None
+    return r
 
 
 @auth

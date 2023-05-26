@@ -68,20 +68,21 @@ def delete_coverage_store(workspace_name, store_name):
 
 
 @auth
-def create_coverage_store(workspace_name, store_name, file_path):
+def create_coverage_store(workspace_name, store_name, file_path, format="GeoTIFF"):
     """Create a coverage store from a raster file on the geoserver.
 
     :param workspace_name: the name of workspace
     :param store_name: the name of the coverage store which you would like to create
     :param file_path: the file_path on the geoserver, relative to the "data_dir"
         You can find the "Data directory"/ "data_dir" in the "server status" page.
+    :param format: raster format, such as GeoTIFF, WorldImage, NetCDF
 
     """
-    # a.username, a.passwd, a.server_url = get_cfg()
+
     cfg = {
         "coverageStore": {
             "name": store_name,
-            "type": "GeoTIFF",
+            "type": format,
             "enabled": True,
             "_default": False,
             "workspace": {"name": workspace_name},
@@ -97,7 +98,7 @@ def create_coverage_store(workspace_name, store_name, file_path):
     )
 
     if r.status_code in [200, 201]:
-        print(f"Datastore {store_name} was created/updated successfully")
+        print(f"Coverage store {store_name} was created/updated successfully")
 
     else:
         print(
@@ -142,10 +143,12 @@ def create_coverage(workspace_name, store_name, coverage_name):
 
 
 @auth
-def get_coverages(workspace_name, store_name):
-    """return a list of names of coverage store within a workspace
+def get_available_coverage_names(workspace_name, store_name):
+    """return a list of names of available coverages within a coverage store.
+        This is something like unpublished layers. You can use create_coverage() to publish the layers.
 
     :param workspace_name: workspace name
+    :param store_name: coverage store name
 
     """
 
@@ -153,13 +156,9 @@ def get_coverages(workspace_name, store_name):
 
     r = requests.get(url, auth=(a.username, a.passwd), params={"list": "all"})
 
-    if r.status_code in [200, 201]:
-        # ret = []
-        ##data = r.json()
-        # if "coverageStore" in data["coverageStores"]:
-        #    ret = [d["name"] for d in data["coverageStores"]["coverageStore"]]
-        return r
+    if r.status_code in [200, 201, 202]:
+        return r.json()["list"]["string"]
     else:
         print(r.text)
         print(r.status_code)
-        return None
+        return []

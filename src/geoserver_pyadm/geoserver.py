@@ -54,7 +54,7 @@ from .coveragestore import (
     delete_coverage_store,
     create_coverage_store,
     create_coverage,
-    get_coverages,
+    get_available_coverage_names,
 )
 
 from . import imagemosaic
