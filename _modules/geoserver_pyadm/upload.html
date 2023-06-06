@@ -10,6 +10,8 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -468,6 +470,42 @@
         <span class="n">upload_shapefile</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">configure</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;Done&quot;</span></div>
+
+
+<div class="viewcode-block" id="upload_image_mosaic"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_image_mosaic">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">upload_image_mosaic</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a zip file which contains image mosaic configuration files, such as indexer.xml, datastore.properties,etc</span>
+<span class="sd">    The zip file may also contains the .nc files. See test/rasters/paleodem.zip for example.</span>
+<span class="sd">    A new image mosaic store will be created if everything goes well.</span>
+
+<span class="sd">    :param workspace_name: workspace name</span>
+<span class="sd">    :param store_name: coverage store name</span>
+<span class="sd">    :param file_path: the location of the local .zip file</span>
+<span class="sd">    :param configure: this parameter takes three possible values</span>
+<span class="sd">        &quot;first&quot; —- (Default) Only setup the first feature type available in the data store.</span>
+<span class="sd">        &quot;none&quot;  —- Do not configure any feature types.</span>
+<span class="sd">        &quot;all&quot;   —- Configure all feature types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/zip&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;configure&quot;</span><span class="p">:</span> <span class="n">configure</span><span class="p">}</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/coveragestores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/file.imagemosaic&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">passwd</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image mosaic store </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2"> is created.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create image mosaic store </span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
 </pre></div>
 
            </div>

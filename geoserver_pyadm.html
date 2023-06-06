@@ -11,6 +11,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -44,15 +46,31 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">geoserver_pyadm</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">geoserver_pyadm package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.coveragestore">geoserver_pyadm.coveragestore module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.coveragestore.create_coverage"><code class="docutils literal notranslate"><span class="pre">create_coverage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.coveragestore.create_coverage_store"><code class="docutils literal notranslate"><span class="pre">create_coverage_store()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.coveragestore.delete_coverage_store"><code class="docutils literal notranslate"><span class="pre">delete_coverage_store()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.coveragestore.get_available_coverage_names"><code class="docutils literal notranslate"><span class="pre">get_available_coverage_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.coveragestore.get_coverage_store_info"><code class="docutils literal notranslate"><span class="pre">get_coverage_store_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.coveragestore.get_coverage_stores"><code class="docutils literal notranslate"><span class="pre">get_coverage_stores()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.datastore">geoserver_pyadm.datastore module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_coveragestore"><code class="docutils literal notranslate"><span class="pre">create_coveragestore()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_datastore"><code class="docutils literal notranslate"><span class="pre">create_datastore()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_geopackage_store"><code class="docutils literal notranslate"><span class="pre">create_geopackage_store()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_store"><code class="docutils literal notranslate"><span class="pre">create_store()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.delete_store"><code class="docutils literal notranslate"><span class="pre">delete_store()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.delete_datastore"><code class="docutils literal notranslate"><span class="pre">delete_datastore()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.get_datastores"><code class="docutils literal notranslate"><span class="pre">get_datastores()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.geoserver">geoserver_pyadm.geoserver module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.imagemosaic">geoserver_pyadm.imagemosaic module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.imagemosaic.add_raster_to_image_mosaic_store"><code class="docutils literal notranslate"><span class="pre">add_raster_to_image_mosaic_store()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.imagemosaic.delete_raster_from_coverage"><code class="docutils literal notranslate"><span class="pre">delete_raster_from_coverage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.imagemosaic.enable_time_dimension"><code class="docutils literal notranslate"><span class="pre">enable_time_dimension()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.imagemosaic.get_rasters_in_coverage"><code class="docutils literal notranslate"><span class="pre">get_rasters_in_coverage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.imagemosaic.reindex_image_mosaic_store"><code class="docutils literal notranslate"><span class="pre">reindex_image_mosaic_store()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.info">geoserver_pyadm.info module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.info.get_global_settings"><code class="docutils literal notranslate"><span class="pre">get_global_settings()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.info.get_status"><code class="docutils literal notranslate"><span class="pre">get_status()</span></code></a></li>
@@ -81,6 +99,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.upload">geoserver_pyadm.upload module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_geopackage"><code class="docutils literal notranslate"><span class="pre">upload_geopackage()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_geopackage_zip"><code class="docutils literal notranslate"><span class="pre">upload_geopackage_zip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_image_mosaic"><code class="docutils literal notranslate"><span class="pre">upload_image_mosaic()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_raster"><code class="docutils literal notranslate"><span class="pre">upload_raster()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_raster_folder"><code class="docutils literal notranslate"><span class="pre">upload_raster_folder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_shapefile"><code class="docutils literal notranslate"><span class="pre">upload_shapefile()</span></code></a></li>
@@ -134,11 +153,21 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-geoserver_pyadm.datastore">
-<span id="geoserver-pyadm-datastore-module"></span><h2>geoserver_pyadm.datastore module<a class="headerlink" href="#module-geoserver_pyadm.datastore" title="Permalink to this heading"></a></h2>
+<section id="module-geoserver_pyadm.coveragestore">
+<span id="geoserver-pyadm-coveragestore-module"></span><h2>geoserver_pyadm.coveragestore module<a class="headerlink" href="#module-geoserver_pyadm.coveragestore" title="Permalink to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="geoserver_pyadm.datastore.create_coveragestore">
-<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_coveragestore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_coveragestore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_coveragestore" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="geoserver_pyadm.coveragestore.create_coverage">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.coveragestore.</span></span><span class="sig-name descname"><span class="pre">create_coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverage_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/coveragestore.html#create_coverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.coveragestore.create_coverage" title="Permalink to this definition"></a></dt>
+<dd><p>Create a coverage within a coverage store. It is more like publishing a layer?
+Anyway, it is useful for image mosaic stores, which allows multiple coverages in one store.</p>
+<p>param workspace_name: workspace name
+param store_name: coverage store name
+param coverage_name: the name of the new coverage</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.coveragestore.create_coverage_store">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.coveragestore.</span></span><span class="sig-name descname"><span class="pre">create_coverage_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GeoTIFF'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/coveragestore.html#create_coverage_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.coveragestore.create_coverage_store" title="Permalink to this definition"></a></dt>
 <dd><p>Create a coverage store from a raster file on the geoserver.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -147,6 +176,79 @@
 <li><p><strong>store_name</strong> – the name of the coverage store which you would like to create</p></li>
 <li><p><strong>file_path</strong> – the file_path on the geoserver, relative to the “data_dir”
 You can find the “Data directory”/ “data_dir” in the “server status” page.</p></li>
+<li><p><strong>format</strong> – raster format, such as GeoTIFF, WorldImage, NetCDF</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.coveragestore.delete_coverage_store">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.coveragestore.</span></span><span class="sig-name descname"><span class="pre">delete_coverage_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/coveragestore.html#delete_coverage_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.coveragestore.delete_coverage_store" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.coveragestore.get_available_coverage_names">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.coveragestore.</span></span><span class="sig-name descname"><span class="pre">get_available_coverage_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/coveragestore.html#get_available_coverage_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.coveragestore.get_available_coverage_names" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>return a list of names of available coverages within a coverage store.</dt><dd><p>This is something like unpublished layers. You can use create_coverage() to publish the layers.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – workspace name</p></li>
+<li><p><strong>store_name</strong> – coverage store name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.coveragestore.get_coverage_store_info">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.coveragestore.</span></span><span class="sig-name descname"><span class="pre">get_coverage_store_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/coveragestore.html#get_coverage_store_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.coveragestore.get_coverage_store_info" title="Permalink to this definition"></a></dt>
+<dd><p>return the coverage store configuration in json format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – workspace name</p></li>
+<li><p><strong>store_name</strong> – coverage store name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.coveragestore.get_coverage_stores">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.coveragestore.</span></span><span class="sig-name descname"><span class="pre">get_coverage_stores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/coveragestore.html#get_coverage_stores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.coveragestore.get_coverage_stores" title="Permalink to this definition"></a></dt>
+<dd><p>return a list of names of coverage store within a workspace</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>workspace_name</strong> – workspace name</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-geoserver_pyadm.datastore">
+<span id="geoserver-pyadm-datastore-module"></span><h2>geoserver_pyadm.datastore module<a class="headerlink" href="#module-geoserver_pyadm.datastore" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.datastore.create_datastore">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_datastore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_datastore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_datastore" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Create a datastore from a folder or .shp on the server.</dt><dd><p>The folder or .shp must have already been on the server.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+create the data store</p></li>
+<li><p><strong>store_name</strong> – the name of data store which you would like to create</p></li>
+<li><p><strong>file_path</strong> – the file_path on the geoserver, relative to the “data_dir”
+(can be a path or a .shp file).
+You can find the “Data directory”/ “data_dir” in the “server status” page.</p></li>
+<li><p><strong>is_dir</strong> – flag to indicate if the store is a shapefile directory</p></li>
 </ul>
 </dd>
 </dl>
@@ -174,30 +276,8 @@ You can find the “Data directory”/ “data_dir” in the “server status”
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="geoserver_pyadm.datastore.create_store">
-<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_store" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Create a datastore from a folder or .shp on the server.</dt><dd><p>The folder or .shp must have already been on the server.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
-create the data store</p></li>
-<li><p><strong>store_name</strong> – the name of data store which you would like to create</p></li>
-<li><p><strong>file_path</strong> – the file_path on the geoserver, relative to the “data_dir”
-(can be a path or a .shp file).
-You can find the “Data directory”/ “data_dir” in the “server status” page.</p></li>
-<li><p><strong>is_dir</strong> – flag to indicate if the store is a shapefile directory</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="geoserver_pyadm.datastore.delete_store">
-<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">delete_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#delete_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.delete_store" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="geoserver_pyadm.datastore.delete_datastore">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">delete_datastore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#delete_datastore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.delete_datastore" title="Permalink to this definition"></a></dt>
 <dd><p>Delete a data store by name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -212,7 +292,7 @@ You can find the “Data directory”/ “data_dir” in the “server status”
 <dl class="py function">
 <dt class="sig sig-object py" id="geoserver_pyadm.datastore.get_datastores">
 <span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">get_datastores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#get_datastores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.get_datastores" title="Permalink to this definition"></a></dt>
-<dd><p>Get datastores in a workspace</p>
+<dd><p>Get all datastores in a workspace</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>workspace</strong> – the name of the workspace in which you are interested</p>
@@ -224,6 +304,84 @@ You can find the “Data directory”/ “data_dir” in the “server status”
 <section id="module-geoserver_pyadm.geoserver">
 <span id="geoserver-pyadm-geoserver-module"></span><h2>geoserver_pyadm.geoserver module<a class="headerlink" href="#module-geoserver_pyadm.geoserver" title="Permalink to this heading"></a></h2>
 <p>Geoserver Python API</p>
+</section>
+<section id="module-geoserver_pyadm.imagemosaic">
+<span id="geoserver-pyadm-imagemosaic-module"></span><h2>geoserver_pyadm.imagemosaic module<a class="headerlink" href="#module-geoserver_pyadm.imagemosaic" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.imagemosaic.add_raster_to_image_mosaic_store">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.imagemosaic.</span></span><span class="sig-name descname"><span class="pre">add_raster_to_image_mosaic_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/imagemosaic.html#add_raster_to_image_mosaic_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.imagemosaic.add_raster_to_image_mosaic_store" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Add a new raster file into the image mosaic store. The raster file must be in the server.</dt><dd><p>Geoserver calls this process “harvesting”.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – workspace name</p></li>
+<li><p><strong>store_name</strong> – image mosaic store name</p></li>
+<li><p><strong>filepath</strong> – the location of the new raster file in the server</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.imagemosaic.delete_raster_from_coverage">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.imagemosaic.</span></span><span class="sig-name descname"><span class="pre">delete_raster_from_coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverage_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/imagemosaic.html#delete_raster_from_coverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.imagemosaic.delete_raster_from_coverage" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a raster from a coverage within an image mosaic store</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – workspace name</p></li>
+<li><p><strong>store_name</strong> – image mosaic store name</p></li>
+<li><p><strong>coverage_name</strong> – the coverage name</p></li>
+<li><p><strong>id</strong> – the raster id which can be retrieved by calling get_rasters_in_coverage()</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.imagemosaic.enable_time_dimension">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.imagemosaic.</span></span><span class="sig-name descname"><span class="pre">enable_time_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverage_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/imagemosaic.html#enable_time_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.imagemosaic.enable_time_dimension" title="Permalink to this definition"></a></dt>
+<dd><p>Enable time dimension for a coverage within a image mosaic store.</p>
+<p>param workspace_name: workspace name
+param store_name: coverage store name
+param coverage_name: the name of the new coverage</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.imagemosaic.get_rasters_in_coverage">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.imagemosaic.</span></span><span class="sig-name descname"><span class="pre">get_rasters_in_coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverage_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/imagemosaic.html#get_rasters_in_coverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.imagemosaic.get_rasters_in_coverage" title="Permalink to this definition"></a></dt>
+<dd><p>Return all the granules in a coverage within an image mosaic store.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – workspace name</p></li>
+<li><p><strong>store_name</strong> – image mosaic store name</p></li>
+<li><p><strong>coverage_name</strong> – the coverage name</p></li>
+<li><p><strong>return_details</strong> – if True, return all details about the granules
+if False, only return id and location.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.imagemosaic.reindex_image_mosaic_store">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.imagemosaic.</span></span><span class="sig-name descname"><span class="pre">reindex_image_mosaic_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/imagemosaic.html#reindex_image_mosaic_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.imagemosaic.reindex_image_mosaic_store" title="Permalink to this definition"></a></dt>
+<dd><p>Reindex an image mosaic store. Re-populate the store with the files in the given path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – workspace name</p></li>
+<li><p><strong>store_name</strong> – image mosaic store name</p></li>
+<li><p><strong>path</strong> – the path which contains the raster files</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-geoserver_pyadm.info">
 <span id="geoserver-pyadm-info-module"></span><h2>geoserver_pyadm.info module<a class="headerlink" href="#module-geoserver_pyadm.info" title="Permalink to this heading"></a></h2>
@@ -489,6 +647,27 @@ be published(not only the one you just uploaded)</p>
 upload the shapefile</p></li>
 <li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
 <li><p><strong>file_path</strong> – the local file path to your geopackage(.zip)</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+“first” —- (Default) Only setup the first feature type available in the data store.
+“none”  —- Do not configure any feature types.
+“all”   —- Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_image_mosaic">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_image_mosaic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_image_mosaic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_image_mosaic" title="Permalink to this definition"></a></dt>
+<dd><p>Upload a zip file which contains image mosaic configuration files, such as indexer.xml, datastore.properties,etc
+The zip file may also contains the .nc files. See test/rasters/paleodem.zip for example.
+A new image mosaic store will be created if everything goes well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – workspace name</p></li>
+<li><p><strong>store_name</strong> – coverage store name</p></li>
+<li><p><strong>file_path</strong> – the location of the local .zip file</p></li>
 <li><p><strong>configure</strong> – this parameter takes three possible values
 “first” —- (Default) Only setup the first feature type available in the data store.
 “none”  —- Do not configure any feature types.

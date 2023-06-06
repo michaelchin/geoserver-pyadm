@@ -11,6 +11,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -78,15 +80,31 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="geoserver_pyadm.html">geoserver_pyadm package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="geoserver_pyadm.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoserver_pyadm.html#module-geoserver_pyadm.coveragestore">geoserver_pyadm.coveragestore module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.create_coverage"><code class="docutils literal notranslate"><span class="pre">create_coverage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.create_coverage_store"><code class="docutils literal notranslate"><span class="pre">create_coverage_store()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.delete_coverage_store"><code class="docutils literal notranslate"><span class="pre">delete_coverage_store()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_available_coverage_names"><code class="docutils literal notranslate"><span class="pre">get_available_coverage_names()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_coverage_store_info"><code class="docutils literal notranslate"><span class="pre">get_coverage_store_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_coverage_stores"><code class="docutils literal notranslate"><span class="pre">get_coverage_stores()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="geoserver_pyadm.html#module-geoserver_pyadm.datastore">geoserver_pyadm.datastore module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_coveragestore"><code class="docutils literal notranslate"><span class="pre">create_coveragestore()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_datastore"><code class="docutils literal notranslate"><span class="pre">create_datastore()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_geopackage_store"><code class="docutils literal notranslate"><span class="pre">create_geopackage_store()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_store"><code class="docutils literal notranslate"><span class="pre">create_store()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.datastore.delete_store"><code class="docutils literal notranslate"><span class="pre">delete_store()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.datastore.delete_datastore"><code class="docutils literal notranslate"><span class="pre">delete_datastore()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.datastore.get_datastores"><code class="docutils literal notranslate"><span class="pre">get_datastores()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="geoserver_pyadm.html#module-geoserver_pyadm.geoserver">geoserver_pyadm.geoserver module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoserver_pyadm.html#module-geoserver_pyadm.imagemosaic">geoserver_pyadm.imagemosaic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.add_raster_to_image_mosaic_store"><code class="docutils literal notranslate"><span class="pre">add_raster_to_image_mosaic_store()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.delete_raster_from_coverage"><code class="docutils literal notranslate"><span class="pre">delete_raster_from_coverage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.enable_time_dimension"><code class="docutils literal notranslate"><span class="pre">enable_time_dimension()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.get_rasters_in_coverage"><code class="docutils literal notranslate"><span class="pre">get_rasters_in_coverage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.reindex_image_mosaic_store"><code class="docutils literal notranslate"><span class="pre">reindex_image_mosaic_store()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="geoserver_pyadm.html#module-geoserver_pyadm.info">geoserver_pyadm.info module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.info.get_global_settings"><code class="docutils literal notranslate"><span class="pre">get_global_settings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.info.get_status"><code class="docutils literal notranslate"><span class="pre">get_status()</span></code></a></li>
@@ -115,6 +133,7 @@
 <li class="toctree-l2"><a class="reference internal" href="geoserver_pyadm.html#module-geoserver_pyadm.upload">geoserver_pyadm.upload module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_geopackage"><code class="docutils literal notranslate"><span class="pre">upload_geopackage()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_geopackage_zip"><code class="docutils literal notranslate"><span class="pre">upload_geopackage_zip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_image_mosaic"><code class="docutils literal notranslate"><span class="pre">upload_image_mosaic()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_raster"><code class="docutils literal notranslate"><span class="pre">upload_raster()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_raster_folder"><code class="docutils literal notranslate"><span class="pre">upload_raster_folder()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_shapefile"><code class="docutils literal notranslate"><span class="pre">upload_shapefile()</span></code></a></li>

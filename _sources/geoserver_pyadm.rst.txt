@@ -4,6 +4,14 @@ geoserver\_pyadm package
 Submodules
 ----------
 
+geoserver\_pyadm.coveragestore module
+-------------------------------------
+
+.. automodule:: geoserver_pyadm.coveragestore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 geoserver\_pyadm.datastore module
 ---------------------------------
 
@@ -16,6 +24,14 @@ geoserver\_pyadm.geoserver module
 ---------------------------------
 
 .. automodule:: geoserver_pyadm.geoserver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+geoserver\_pyadm.imagemosaic module
+-----------------------------------
+
+.. automodule:: geoserver_pyadm.imagemosaic
    :members:
    :undoc-members:
    :show-inheritance:

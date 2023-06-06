@@ -10,6 +10,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -72,9 +74,11 @@
  <a href="#A"><strong>A</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#U"><strong>U</strong></a>
  
@@ -86,6 +90,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.add_raster_to_image_mosaic_store">add_raster_to_image_mosaic_store() (in module geoserver_pyadm.imagemosaic)</a>
+</li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.style.add_style">add_style() (in module geoserver_pyadm.style)</a>
 </li>
   </ul></td>
@@ -94,13 +100,15 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_coveragestore">create_coveragestore() (in module geoserver_pyadm.datastore)</a>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.create_coverage">create_coverage() (in module geoserver_pyadm.coveragestore)</a>
 </li>
-      <li><a href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_geopackage_store">create_geopackage_store() (in module geoserver_pyadm.datastore)</a>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.create_coverage_store">create_coverage_store() (in module geoserver_pyadm.coveragestore)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_store">create_store() (in module geoserver_pyadm.datastore)</a>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_datastore">create_datastore() (in module geoserver_pyadm.datastore)</a>
+</li>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.datastore.create_geopackage_store">create_geopackage_store() (in module geoserver_pyadm.datastore)</a>
 </li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.workspace.create_workspace">create_workspace() (in module geoserver_pyadm.workspace)</a>
 </li>
@@ -110,15 +118,27 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="geoserver_pyadm.html#geoserver_pyadm.layer.delete_layer">delete_layer() (in module geoserver_pyadm.layer)</a>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.delete_coverage_store">delete_coverage_store() (in module geoserver_pyadm.coveragestore)</a>
 </li>
-      <li><a href="geoserver_pyadm.html#geoserver_pyadm.datastore.delete_store">delete_store() (in module geoserver_pyadm.datastore)</a>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.datastore.delete_datastore">delete_datastore() (in module geoserver_pyadm.datastore)</a>
+</li>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.layer.delete_layer">delete_layer() (in module geoserver_pyadm.layer)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.delete_raster_from_coverage">delete_raster_from_coverage() (in module geoserver_pyadm.imagemosaic)</a>
+</li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.style.delete_style">delete_style() (in module geoserver_pyadm.style)</a>
 </li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.workspace.delete_workspace">delete_workspace() (in module geoserver_pyadm.workspace)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.enable_time_dimension">enable_time_dimension() (in module geoserver_pyadm.imagemosaic)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -134,6 +154,13 @@
 </li>
       </ul></li>
       <li>
+    geoserver_pyadm.coveragestore
+
+      <ul>
+        <li><a href="geoserver_pyadm.html#module-geoserver_pyadm.coveragestore">module</a>
+</li>
+      </ul></li>
+      <li>
     geoserver_pyadm.datastore
 
       <ul>
@@ -145,6 +172,13 @@
 
       <ul>
         <li><a href="geoserver_pyadm.html#module-geoserver_pyadm.geoserver">module</a>
+</li>
+      </ul></li>
+      <li>
+    geoserver_pyadm.imagemosaic
+
+      <ul>
+        <li><a href="geoserver_pyadm.html#module-geoserver_pyadm.imagemosaic">module</a>
 </li>
       </ul></li>
       <li>
@@ -186,6 +220,12 @@
       </ul></li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.workspace.get_all_workspaces">get_all_workspaces() (in module geoserver_pyadm.workspace)</a>
 </li>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_available_coverage_names">get_available_coverage_names() (in module geoserver_pyadm.coveragestore)</a>
+</li>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_coverage_store_info">get_coverage_store_info() (in module geoserver_pyadm.coveragestore)</a>
+</li>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_coverage_stores">get_coverage_stores() (in module geoserver_pyadm.coveragestore)</a>
+</li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.datastore.get_datastores">get_datastores() (in module geoserver_pyadm.datastore)</a>
 </li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.info.get_global_settings">get_global_settings() (in module geoserver_pyadm.info)</a>
@@ -195,6 +235,8 @@
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.layer.get_layer_styles">get_layer_styles() (in module geoserver_pyadm.layer)</a>
 </li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.layer.get_layers">get_layers() (in module geoserver_pyadm.layer)</a>
+</li>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.get_rasters_in_coverage">get_rasters_in_coverage() (in module geoserver_pyadm.imagemosaic)</a>
 </li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.info.get_status">get_status() (in module geoserver_pyadm.info)</a>
 </li>
@@ -218,9 +260,13 @@
       <ul>
         <li><a href="geoserver_pyadm.html#module-geoserver_pyadm">geoserver_pyadm</a>
 </li>
+        <li><a href="geoserver_pyadm.html#module-geoserver_pyadm.coveragestore">geoserver_pyadm.coveragestore</a>
+</li>
         <li><a href="geoserver_pyadm.html#module-geoserver_pyadm.datastore">geoserver_pyadm.datastore</a>
 </li>
         <li><a href="geoserver_pyadm.html#module-geoserver_pyadm.geoserver">geoserver_pyadm.geoserver</a>
+</li>
+        <li><a href="geoserver_pyadm.html#module-geoserver_pyadm.imagemosaic">geoserver_pyadm.imagemosaic</a>
 </li>
         <li><a href="geoserver_pyadm.html#module-geoserver_pyadm.info">geoserver_pyadm.info</a>
 </li>
@@ -250,6 +296,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.imagemosaic.reindex_image_mosaic_store">reindex_image_mosaic_store() (in module geoserver_pyadm.imagemosaic)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -264,6 +318,8 @@
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_geopackage">upload_geopackage() (in module geoserver_pyadm.upload)</a>
 </li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_geopackage_zip">upload_geopackage_zip() (in module geoserver_pyadm.upload)</a>
+</li>
+      <li><a href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_image_mosaic">upload_image_mosaic() (in module geoserver_pyadm.upload)</a>
 </li>
       <li><a href="geoserver_pyadm.html#geoserver_pyadm.upload.upload_raster">upload_raster() (in module geoserver_pyadm.upload)</a>
 </li>
