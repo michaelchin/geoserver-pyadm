@@ -4,7 +4,7 @@ on:
 
   push:
     branches:
-      - build-workflow
+      - main
 jobs:
   build-test-doc:
     name: build test doc
