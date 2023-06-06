@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geoserver_pyadm package &mdash; geoserver-pyadm 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="geoserver_pyadm" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            geoserver-pyadm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">geoserver_pyadm</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geoserver_pyadm package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.datastore">geoserver_pyadm.datastore module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_coveragestore"><code class="docutils literal notranslate"><span class="pre">create_coveragestore()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_geopackage_store"><code class="docutils literal notranslate"><span class="pre">create_geopackage_store()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.create_store"><code class="docutils literal notranslate"><span class="pre">create_store()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.delete_store"><code class="docutils literal notranslate"><span class="pre">delete_store()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.datastore.get_datastores"><code class="docutils literal notranslate"><span class="pre">get_datastores()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.geoserver">geoserver_pyadm.geoserver module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.info">geoserver_pyadm.info module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.info.get_global_settings"><code class="docutils literal notranslate"><span class="pre">get_global_settings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.info.get_status"><code class="docutils literal notranslate"><span class="pre">get_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.info.get_version"><code class="docutils literal notranslate"><span class="pre">get_version()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.layer">geoserver_pyadm.layer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.delete_layer"><code class="docutils literal notranslate"><span class="pre">delete_layer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.get_layer"><code class="docutils literal notranslate"><span class="pre">get_layer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.get_layer_styles"><code class="docutils literal notranslate"><span class="pre">get_layer_styles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.get_layers"><code class="docutils literal notranslate"><span class="pre">get_layers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.publish_geopackage_layer"><code class="docutils literal notranslate"><span class="pre">publish_geopackage_layer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.publish_layer"><code class="docutils literal notranslate"><span class="pre">publish_layer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.layer.publish_raster_layer"><code class="docutils literal notranslate"><span class="pre">publish_raster_layer()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.style">geoserver_pyadm.style module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.style.add_additional_style"><code class="docutils literal notranslate"><span class="pre">add_additional_style()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.style.add_style"><code class="docutils literal notranslate"><span class="pre">add_style()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.style.delete_style"><code class="docutils literal notranslate"><span class="pre">delete_style()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.style.get_styles"><code class="docutils literal notranslate"><span class="pre">get_styles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.style.modify_style"><code class="docutils literal notranslate"><span class="pre">modify_style()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.style.set_default_style"><code class="docutils literal notranslate"><span class="pre">set_default_style()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.upload">geoserver_pyadm.upload module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_geopackage"><code class="docutils literal notranslate"><span class="pre">upload_geopackage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_geopackage_zip"><code class="docutils literal notranslate"><span class="pre">upload_geopackage_zip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_raster"><code class="docutils literal notranslate"><span class="pre">upload_raster()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_raster_folder"><code class="docutils literal notranslate"><span class="pre">upload_raster_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_shapefile"><code class="docutils literal notranslate"><span class="pre">upload_shapefile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_shapefile_folder"><code class="docutils literal notranslate"><span class="pre">upload_shapefile_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_shapefile_zip"><code class="docutils literal notranslate"><span class="pre">upload_shapefile_zip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_style"><code class="docutils literal notranslate"><span class="pre">upload_style()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.upload.upload_zip"><code class="docutils literal notranslate"><span class="pre">upload_zip()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm.workspace">geoserver_pyadm.workspace module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.workspace.create_workspace"><code class="docutils literal notranslate"><span class="pre">create_workspace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.workspace.delete_workspace"><code class="docutils literal notranslate"><span class="pre">delete_workspace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.workspace.get_all_workspaces"><code class="docutils literal notranslate"><span class="pre">get_all_workspaces()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoserver_pyadm.workspace.get_workspace"><code class="docutils literal notranslate"><span class="pre">get_workspace()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-geoserver_pyadm">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">geoserver-pyadm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">geoserver_pyadm</a></li>
+      <li class="breadcrumb-item active">geoserver_pyadm package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/geoserver_pyadm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="geoserver-pyadm-package">
+<h1>geoserver_pyadm package<a class="headerlink" href="#geoserver-pyadm-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-geoserver_pyadm.datastore">
+<span id="geoserver-pyadm-datastore-module"></span><h2>geoserver_pyadm.datastore module<a class="headerlink" href="#module-geoserver_pyadm.datastore" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.datastore.create_coveragestore">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_coveragestore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_coveragestore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_coveragestore" title="Permalink to this definition"></a></dt>
+<dd><p>Create a coverage store from a raster file on the geoserver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of workspace</p></li>
+<li><p><strong>store_name</strong> – the name of the coverage store which you would like to create</p></li>
+<li><p><strong>file_path</strong> – the file_path on the geoserver, relative to the “data_dir”
+You can find the “Data directory”/ “data_dir” in the “server status” page.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.datastore.create_geopackage_store">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_geopackage_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_geopackage_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_geopackage_store" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Create a datastore from a geopackage file.</dt><dd><p>The geopackage file must have already been on the server.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+create the data store</p></li>
+<li><p><strong>store_name</strong> – the name of data store which you would like to create</p></li>
+<li><p><strong>file_path</strong> – the file_path on the geoserver, relative to the “data_dir”
+(can be a path or a .shp file).
+You can find the “Data directory”/ “data_dir” in the “server status” page.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.datastore.create_store">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">create_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#create_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.create_store" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Create a datastore from a folder or .shp on the server.</dt><dd><p>The folder or .shp must have already been on the server.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+create the data store</p></li>
+<li><p><strong>store_name</strong> – the name of data store which you would like to create</p></li>
+<li><p><strong>file_path</strong> – the file_path on the geoserver, relative to the “data_dir”
+(can be a path or a .shp file).
+You can find the “Data directory”/ “data_dir” in the “server status” page.</p></li>
+<li><p><strong>is_dir</strong> – flag to indicate if the store is a shapefile directory</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.datastore.delete_store">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">delete_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#delete_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.delete_store" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a data store by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of workspace in which the data store is</p></li>
+<li><p><strong>store_name</strong> – the name of data store which you would like to delete</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.datastore.get_datastores">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.datastore.</span></span><span class="sig-name descname"><span class="pre">get_datastores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/datastore.html#get_datastores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.datastore.get_datastores" title="Permalink to this definition"></a></dt>
+<dd><p>Get datastores in a workspace</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>workspace</strong> – the name of the workspace in which you are interested</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-geoserver_pyadm.geoserver">
+<span id="geoserver-pyadm-geoserver-module"></span><h2>geoserver_pyadm.geoserver module<a class="headerlink" href="#module-geoserver_pyadm.geoserver" title="Permalink to this heading"></a></h2>
+<p>Geoserver Python API</p>
+</section>
+<section id="module-geoserver_pyadm.info">
+<span id="geoserver-pyadm-info-module"></span><h2>geoserver_pyadm.info module<a class="headerlink" href="#module-geoserver_pyadm.info" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.info.get_global_settings">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.info.</span></span><span class="sig-name descname"><span class="pre">get_global_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/info.html#get_global_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.info.get_global_settings" title="Permalink to this definition"></a></dt>
+<dd><p>Get GeoServer’s global settings.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.info.get_status">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.info.</span></span><span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/info.html#get_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.info.get_status" title="Permalink to this definition"></a></dt>
+<dd><p>Get GeoServer’s status.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.info.get_version">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.info.</span></span><span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/info.html#get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.info.get_version" title="Permalink to this definition"></a></dt>
+<dd><p>Get GeoServer’s version.</p>
+</dd></dl>
+
+</section>
+<section id="module-geoserver_pyadm.layer">
+<span id="geoserver-pyadm-layer-module"></span><h2>geoserver_pyadm.layer module<a class="headerlink" href="#module-geoserver_pyadm.layer" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.layer.delete_layer">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.layer.</span></span><span class="sig-name descname"><span class="pre">delete_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/layer.html#delete_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.layer.delete_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a layer/layers by name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer_name</strong> – the name of the layer which you would like to delete</p></li>
+<li><p><strong>workspace</strong> – (Default value = None) If the workspace name is not given,
+delete all layers with the given name.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.layer.get_layer">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.layer.</span></span><span class="sig-name descname"><span class="pre">get_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/layer.html#get_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.layer.get_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Get the definition of the layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer_name</strong> – str: the name of the layer to retrieve</p></li>
+<li><p><strong>workspace</strong> – (Default value = None) if the workspace name is not given,
+return the first layer which matches the given layer name. This is odd!</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.layer.get_layer_styles">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.layer.</span></span><span class="sig-name descname"><span class="pre">get_layer_styles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/layer.html#get_layer_styles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.layer.get_layer_styles" title="Permalink to this definition"></a></dt>
+<dd><p>Get the styles associated with a layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>full_layer_name</strong> – str: the layer name including the workspace_name,
+such as workspace_name:layer_name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.layer.get_layers">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.layer.</span></span><span class="sig-name descname"><span class="pre">get_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/layer.html#get_layers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.layer.get_layers" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Get all the layers in geoserver if workspace name is not given.</dt><dd><p>Return all the layers in a workspace if workspace name is given.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>workspace</strong> – (Default value = None) If workspace name is not given,
+the function will return all the layers in the geoserver.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.layer.publish_geopackage_layer">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.layer.</span></span><span class="sig-name descname"><span class="pre">publish_geopackage_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'polygon'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/layer.html#publish_geopackage_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.layer.publish_geopackage_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Publish a geopackage layer in the data store</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of the workspace in which the data store is</p></li>
+<li><p><strong>store_name</strong> – the name of the data store in which the layer you would like to publish is</p></li>
+<li><p><strong>layer_name</strong> – the name of geopackage layer which you would like to publish.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.layer.publish_layer">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.layer.</span></span><span class="sig-name descname"><span class="pre">publish_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/layer.html#publish_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.layer.publish_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Publish a layer in the data store</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of the workspace in which the data store is</p></li>
+<li><p><strong>store_name</strong> – the name of the data store in which the layer you would like to publish is</p></li>
+<li><p><strong>layer_name</strong> – the name of layer which you would like to publish.
+the name could be the shapefiles name without .shp</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.layer.publish_raster_layer">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.layer.</span></span><span class="sig-name descname"><span class="pre">publish_raster_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/layer.html#publish_raster_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.layer.publish_raster_layer" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Publish a coverage/raster layer from a coverage store.</dt><dd><p>It seems ,for some reason, that only one raster is allowed per coverage store.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of the workspace</p></li>
+<li><p><strong>store_name</strong> – the name of the coverage store in which the raster layer reside</p></li>
+<li><p><strong>layer_name</strong> – the name of the raster layer</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-geoserver_pyadm.style">
+<span id="geoserver-pyadm-style-module"></span><h2>geoserver_pyadm.style module<a class="headerlink" href="#module-geoserver_pyadm.style" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.style.add_additional_style">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.style.</span></span><span class="sig-name descname"><span class="pre">add_additional_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_style_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/style.html#add_additional_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.style.add_additional_style" title="Permalink to this definition"></a></dt>
+<dd><p>Add an additional style to a layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>full_layer_name</strong> – str: the layer name including the workspace_name,
+such as workspace_name:layer_name</p></li>
+<li><p><strong>full_style_name</strong> – str: the style name including the workspace_name,
+such as workspace_name:style_name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.style.add_style">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.style.</span></span><span class="sig-name descname"><span class="pre">add_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/style.html#add_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.style.add_style" title="Permalink to this definition"></a></dt>
+<dd><p>Add an empty style globally or into a workspace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>style_name</strong> – the name of the style which you would like to create</p></li>
+<li><p><strong>workspace</strong> – (Default value = None) the name of the workspace.
+If the workspace name is not given, the new style will be a global one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.style.delete_style">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.style.</span></span><span class="sig-name descname"><span class="pre">delete_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/style.html#delete_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.style.delete_style" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a style by name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>style_name</strong> – the name of the style which you would like to delete</p></li>
+<li><p><strong>workspace</strong> – (Default value = None) the name of the workspace.
+If the workspace name is not given, the style is a global one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.style.get_styles">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.style.</span></span><span class="sig-name descname"><span class="pre">get_styles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/style.html#get_styles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.style.get_styles" title="Permalink to this definition"></a></dt>
+<dd><p>Get all global styles or all styles in a workspace</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>workspace</strong> – (Default value = None) If the workspace name is not given,
+all global styles will be returned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.style.modify_style">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.style.</span></span><span class="sig-name descname"><span class="pre">modify_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/style.html#modify_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.style.modify_style" title="Permalink to this definition"></a></dt>
+<dd><p>Change an existing style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>style_name</strong> – the name of the style</p></li>
+<li><p><strong>style_data</strong> – the new data for the style</p></li>
+<li><p><strong>workspace</strong> – (Default value = None) the name of the workspace.
+If the workspace name is not given, the style is a global one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.style.set_default_style">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.style.</span></span><span class="sig-name descname"><span class="pre">set_default_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_style_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/style.html#set_default_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.style.set_default_style" title="Permalink to this definition"></a></dt>
+<dd><p>set the default style for a layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>full_layer_name</strong> – str: the layer name including the workspace_name,
+such as workspace_name:layer_name</p></li>
+<li><p><strong>full_style_name</strong> – str: the style name including the workspace_name,
+such as workspace_name:style_name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-geoserver_pyadm.upload">
+<span id="geoserver-pyadm-upload-module"></span><h2>geoserver_pyadm.upload module<a class="headerlink" href="#module-geoserver_pyadm.upload" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_geopackage">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_geopackage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_geopackage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_geopackage" title="Permalink to this definition"></a></dt>
+<dd><p>Upload a local geopackage file.</p>
+<blockquote>
+<div><p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefile</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
+<li><p><strong>file_path</strong> – the local path to your geopackge file</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+first—(Default) Only setup the first feature type available in the data store.
+none—Do not configure any feature types.
+all—Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_geopackage_zip">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_geopackage_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_geopackage_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_geopackage_zip" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Upload a local .zip file which contains geopackage file.</dt><dd><p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefile</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
+<li><p><strong>file_path</strong> – the local file path to your geopackage(.zip)</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+“first” —- (Default) Only setup the first feature type available in the data store.
+“none”  —- Do not configure any feature types.
+“all”   —- Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_raster">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverage_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geotiff'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_raster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_raster" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Upload a local raster into geoserver.</dt><dd><p>Only one raster is allowed per coverage store unless using raster mosaic.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of workspace</p></li>
+<li><p><strong>store_name</strong> – the name of data store</p></li>
+<li><p><strong>file_path</strong> – the local file path to the raster(.zip)</p></li>
+<li><p><strong>coverage_name</strong> – The coverageName parameter specifies the name of the coverage within the coverage store.
+This parameter is only relevant if the configure parameter is not equal to “none”.
+If not specified the resulting coverage will receive the same name as its containing coverage store.</p></li>
+<li><p><strong>file_fmt</strong> – “geotiff” – GeoTIFF
+“worldimage” – Georeferenced image (JPEG, PNG, TIFF)
+“imagemosaic” – Image mosaic</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+“first” —- (Default) Only setup the first feature type available in the data store.
+“none”  —- Do not configure any feature types.
+“all”   —- Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_raster_folder">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_raster_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geotiff'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_raster_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_raster_folder" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Upload all the rasters within a local folder.</dt><dd><p>The rasters can be .zip, .tiff, .tif, .png, .jpg, .jpeg files.
+Make sure you have georeferenced your rasters.
+The store name and layer name will be deduced from file name.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the rasters</p></li>
+<li><p><strong>folder_path</strong> – the local path to your rasters</p></li>
+<li><p><strong>file_fmt</strong> – “geotiff” – GeoTIFF
+“worldimage” – Georeferenced image (JPEG, PNG, TIFF)
+“imagemosaic” – Image mosaic</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_shapefile">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_shapefile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_shapefile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_shapefile" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>Upload a local shapefile. A shapefile may contain several files.</dt><dd><p>You need to specify the path of the .shp file.</p>
+<p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefile</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
+<li><p><strong>file_path</strong> – the local path to your shapefile, such as xxxxxx.shp</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+first—(Default) Only setup the first feature type available in the data store.
+none—Do not configure any feature types.
+all—Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_shapefile_folder">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_shapefile_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_shapefile_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_shapefile_folder" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>Upload all the shapefiles within a local folder. The shapefiles can be .zip files or separate files.</dt><dd><p>Make sure your .zip is valid. If there is a folder in your .zip file, the upload will fail.
+For example, if, inside you .zip file, your files looks like shapefile/xxxxxxx.shp, the .zip file cannot be uploaded.
+Inside your .zip file, it must looks like this xxxxxxxx.shp, xxxxxxxx.dbf, etc.</p>
+<p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefiles</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefiles</p></li>
+<li><p><strong>folder_path</strong> – the local path to your shapefiles</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+first—(Default) Only setup the first feature type available in the data store.
+none—Do not configure any feature types.
+all—Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_shapefile_zip">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_shapefile_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_shapefile_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_shapefile_zip" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Upload a local .zip file which contains shapefile.</dt><dd><p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefile</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
+<li><p><strong>file_path</strong> – the local file path to your shapefile(.zip)</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+“first” —- (Default) Only setup the first feature type available in the data store.
+“none”  —- Do not configure any feature types.
+“all”   —- Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_style">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_style" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Upload a local sld file as a new style.</dt><dd><p>The sytle must not exist yet.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>style_name</strong> – the name of the new style</p></li>
+<li><p><strong>file_path</strong> – the local path to the .sld file</p></li>
+<li><p><strong>workspace</strong> – (Default value = None) the name of the workspace.
+If the workspace name is not given, the new style will be a global one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.upload.upload_zip">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.upload.</span></span><span class="sig-name descname"><span class="pre">upload_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'shp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/upload.html#upload_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.upload.upload_zip" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Upload a local .zip file which contains shapefile.</dt><dd><p>warning: when use configure=”all”, all the shapefiles in the datastore will
+be published(not only the one you just uploaded)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of destine workspace in which you would like to
+upload the shapefile</p></li>
+<li><p><strong>store_name</strong> – the name of datastore in which you would like to upload the shapefile</p></li>
+<li><p><strong>file_path</strong> – the local file path to your shapefile(.zip)</p></li>
+<li><p><strong>format</strong> – support ‘shp’ and ‘gpkg’</p></li>
+<li><p><strong>configure</strong> – this parameter takes three possible values
+“first” —- (Default) Only setup the first feature type available in the data store.
+“none”  —- Do not configure any feature types.
+“all”   —- Configure all feature types.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-geoserver_pyadm.workspace">
+<span id="geoserver-pyadm-workspace-module"></span><h2>geoserver_pyadm.workspace module<a class="headerlink" href="#module-geoserver_pyadm.workspace" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.workspace.create_workspace">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.workspace.</span></span><span class="sig-name descname"><span class="pre">create_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet_on_exist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/workspace.html#create_workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.workspace.create_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>create a workspace by name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of the workspace which you would like to create</p></li>
+<li><p><strong>quiet_on_exist</strong> – flag to indicate if raise exception when the workspace already
+exists.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.workspace.delete_workspace">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.workspace.</span></span><span class="sig-name descname"><span class="pre">delete_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet_on_not_exist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/workspace.html#delete_workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.workspace.delete_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>delete a workspace by name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> – the name of the workspace which you would like to delete</p></li>
+<li><p><strong>quiet_on_not_exist</strong> – flag to indicate if raise exception when trying to
+delete an non-exist workspace</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.workspace.get_all_workspaces">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.workspace.</span></span><span class="sig-name descname"><span class="pre">get_all_workspaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/workspace.html#get_all_workspaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.workspace.get_all_workspaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get the names of all workspaces</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geoserver_pyadm.workspace.get_workspace">
+<span class="sig-prename descclassname"><span class="pre">geoserver_pyadm.workspace.</span></span><span class="sig-name descname"><span class="pre">get_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/geoserver_pyadm/workspace.html#get_workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoserver_pyadm.workspace.get_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>Get the definition of a workspace</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – the name of the workspace in which you are interested</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-geoserver_pyadm">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-geoserver_pyadm" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="geoserver_pyadm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Michael Chin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
