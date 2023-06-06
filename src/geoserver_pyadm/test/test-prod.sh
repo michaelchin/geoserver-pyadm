@@ -4,9 +4,9 @@ GEOSERVER_PYADM_TEST_MODULE=true
 
 #pip install -y geoserver-pyadm
 
-python test-create-workspace.py
-python test-delete-workspace.py
+python test_create_workspace.py
+python test_delete_workspace.py
 
-python test-upload-local-raster.py clean
-python test-upload-geopackage.py clean
-python test-publish-shapefiles-on-server.py clean
+python test_upload_local_raster.py clean
+python test_upload_geopackage.py clean
+python test_publish_shapefiles_on_server.py clean
