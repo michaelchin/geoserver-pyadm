@@ -87,7 +87,7 @@ def delete_datastore(workspace_name, store_name):
 
 @auth
 def get_datastores(workspace):
-    """Get datastores in a workspace
+    """Get all datastores in a workspace
 
     :param workspace: the name of the workspace in which you are interested
 
