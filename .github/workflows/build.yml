@@ -1,5 +1,7 @@
 name: Build Test and Doc
 on: 
+  workflow_dispatch:
+    
   push:
     branches:
       - build-workflow
@@ -36,7 +38,7 @@ jobs:
       - name: Update github pages
         run: | 
           chmod +x ./main/scripts/update-gh-pages.sh
-          ./scripts/update-gh-pages.sh
+          ./main/scripts/update-gh-pages.sh
         env:
           GITHUB_TOKEN: '${{secrets.GH_PAGE_COMMIT_TOKEN}}'
 
