@@ -4,7 +4,7 @@
 # it assumes the main branch is in folder "main"
 # the gh-pages branch is in folder "gh-pages"
 
-cp -rf ./main/doc/build/html/* ./pg-pages/
+cp -rf ./main/doc/build/html/* ./gh-pages/
 
 cd ./gh-pages/
 

@@ -1,7 +1,7 @@
 name: Build Test and Doc
 on: 
   workflow_dispatch:
-    
+
   push:
     branches:
       - build-workflow
@@ -24,7 +24,7 @@ jobs:
           repository: michaelchin/geoserver-pyadm
           ref: gh-pages
           token: ${{ secrets.GH_PAGE_COMMIT_TOKEN }}
-          path: gp-pages
+          path: gh-pages
        
       - name: Build doc
         run: | 
