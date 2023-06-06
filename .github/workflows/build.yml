@@ -26,9 +26,9 @@ jobs:
        
       - name: Update websites
         run: | 
-          chmod +x ./main/build-doc.sh
+          chmod +x ./main/scripts/build-workflow.sh
           cd main
-          ./build-doc.sh
+          ./scripts/build-workflow.sh
         env:
           GITHUB_TOKEN: '${{secrets.GH_PAGE_COMMIT_TOKEN}}'
 
