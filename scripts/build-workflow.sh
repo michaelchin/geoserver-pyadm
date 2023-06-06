@@ -7,7 +7,7 @@ python -m build
 twine check dist/*
 
 pip3 install pip-tools
-pip3 install -U sphinx
+pip3 install -U sphinx sphinx_rtd_theme
 pip-compile pyproject.toml
 pip3 install .
 rm doc/source/geoserver_pyadm.rst

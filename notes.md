@@ -18,7 +18,7 @@
 
 - `pip-compile pyproject.toml`
 - `pip3 install .`
-- `pip install -U sphinx`
+- `pip install -U sphinx sphinx_rtd_theme`
 - `sphinx-apidoc -o doc/source src/geoserver_pyadm/`
 - `make html`
 
