@@ -24,11 +24,19 @@ jobs:
           token: ${{ secrets.GH_PAGE_COMMIT_TOKEN }}
           path: gp-pages
        
-      - name: Update websites
+      - name: Build doc
         run: | 
           chmod +x ./main/scripts/build-workflow.sh
           cd main
           ./scripts/build-workflow.sh
+          cd ..
+        env:
+          GITHUB_TOKEN: '${{secrets.GH_PAGE_COMMIT_TOKEN}}'
+
+      - name: Update github pages
+        run: | 
+          chmod +x ./main/scripts/update-gh-pages.sh
+          ./scripts/update-gh-pages.sh
         env:
           GITHUB_TOKEN: '${{secrets.GH_PAGE_COMMIT_TOKEN}}'
 
