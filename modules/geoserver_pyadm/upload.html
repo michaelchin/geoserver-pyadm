@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geoserver_pyadm.upload &mdash; geoserver-pyadm 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            geoserver-pyadm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">geoserver_pyadm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">geoserver-pyadm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">geoserver_pyadm.upload</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for geoserver_pyadm.upload</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_auth</span> <span class="k">as</span> <span class="n">a</span>
+<span class="kn">from</span> <span class="nn">._auth</span> <span class="kn">import</span> <span class="n">auth</span>
+
+
+<div class="viewcode-block" id="upload_raster"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_raster">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">upload_raster</span><span class="p">(</span>
+    <span class="n">workspace_name</span><span class="p">,</span>
+    <span class="n">store_name</span><span class="p">,</span>
+    <span class="n">file_path</span><span class="p">,</span>
+    <span class="n">coverage_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">file_fmt</span><span class="o">=</span><span class="s2">&quot;geotiff&quot;</span><span class="p">,</span>
+    <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local raster into geoserver.</span>
+<span class="sd">        Only one raster is allowed per coverage store unless using raster mosaic.</span>
+
+<span class="sd">    :param workspace_name: the name of workspace</span>
+<span class="sd">    :param store_name: the name of data store</span>
+<span class="sd">    :param file_path: the local file path to the raster(.zip)</span>
+<span class="sd">    :param coverage_name: The coverageName parameter specifies the name of the coverage within the coverage store.</span>
+<span class="sd">        This parameter is only relevant if the configure parameter is not equal to “none”.</span>
+<span class="sd">        If not specified the resulting coverage will receive the same name as its containing coverage store.</span>
+<span class="sd">    :param file_fmt: &quot;geotiff&quot; -- GeoTIFF</span>
+<span class="sd">                     &quot;worldimage&quot; -- Georeferenced image (JPEG, PNG, TIFF)</span>
+<span class="sd">                     &quot;imagemosaic&quot; -- Image mosaic</span>
+<span class="sd">    :param configure: this parameter takes three possible values</span>
+<span class="sd">        &quot;first&quot; —- (Default) Only setup the first feature type available in the data store.</span>
+<span class="sd">        &quot;none&quot;  —- Do not configure any feature types.</span>
+<span class="sd">        &quot;all&quot;   —- Configure all feature types.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;.tiff&quot;</span><span class="p">]:</span>
+        <span class="c1"># content_type = &quot;image/tiff&quot;</span>
+        <span class="n">file_fmt_</span> <span class="o">=</span> <span class="s2">&quot;geotiff&quot;</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpeg&quot;</span><span class="p">]:</span>
+        <span class="c1"># content_type = &quot;image/jpeg&quot;</span>
+        <span class="n">file_fmt_</span> <span class="o">=</span> <span class="s2">&quot;worldimage&quot;</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.png&quot;</span><span class="p">]:</span>
+        <span class="c1"># content_type = &quot;image/png&quot;</span>
+        <span class="n">file_fmt_</span> <span class="o">=</span> <span class="s2">&quot;worldimage&quot;</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.zip&quot;</span><span class="p">]:</span>
+        <span class="n">file_fmt_</span> <span class="o">=</span> <span class="n">file_fmt</span>
+        <span class="c1"># content_type = &quot;application/zip&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported file format: </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">content_type</span> <span class="o">=</span> <span class="s2">&quot;application/zip&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="n">content_type</span><span class="p">,</span> <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+
+    <span class="n">coverage_name_</span> <span class="o">=</span> <span class="n">coverage_name</span> <span class="k">if</span> <span class="n">coverage_name</span> <span class="k">else</span> <span class="n">store_name</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/coveragestores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/&quot;</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;file.</span><span class="si">{</span><span class="n">file_fmt_</span><span class="si">}</span><span class="s2">?coverageName=</span><span class="si">{</span><span class="n">coverage_name_</span><span class="si">}</span><span class="s2">&amp;configure=</span><span class="si">{</span><span class="n">configure</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;.zip&quot;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+                <span class="n">compression</span><span class="o">=</span><span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">,</span>
+                <span class="n">compresslevel</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">tmp_zip</span><span class="p">:</span>
+                <span class="n">tmp_zip</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                    <span class="n">url</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span>
+                    <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">passwd</span><span class="p">),</span>
+                    <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+                <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">passwd</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raster </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> has been uploaded successfully&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unable to upload raster </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">. Status code: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="w"> </span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="upload_raster_folder"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_raster_folder">[docs]</a><span class="k">def</span> <span class="nf">upload_raster_folder</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">,</span> <span class="n">file_fmt</span><span class="o">=</span><span class="s2">&quot;geotiff&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload all the rasters within a local folder.</span>
+<span class="sd">        The rasters can be .zip, .tiff, .tif, .png, .jpg, .jpeg files.</span>
+<span class="sd">        Make sure you have georeferenced your rasters.</span>
+<span class="sd">        The store name and layer name will be deduced from file name.</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        upload the rasters</span>
+<span class="sd">    :param folder_path: the local path to your rasters</span>
+<span class="sd">    :param file_fmt: &quot;geotiff&quot; -- GeoTIFF</span>
+<span class="sd">                     &quot;worldimage&quot; -- Georeferenced image (JPEG, PNG, TIFF)</span>
+<span class="sd">                     &quot;imagemosaic&quot; -- Image mosaic</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">file_ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.zip&quot;</span><span class="p">,</span> <span class="s2">&quot;.tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpeg&quot;</span><span class="p">]:</span>
+        <span class="n">raster_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_path</span><span class="si">}</span><span class="s2">/*</span><span class="si">{</span><span class="n">file_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">raster_files</span><span class="p">:</span>
+            <span class="n">upload_raster</span><span class="p">(</span>
+                <span class="n">workspace_name</span><span class="p">,</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">f</span><span class="p">,</span>
+                <span class="n">file_fmt</span><span class="o">=</span><span class="n">file_fmt</span><span class="p">,</span>
+                <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;Done&quot;</span></div>
+
+
+<div class="viewcode-block" id="upload_style"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_style">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">upload_style</span><span class="p">(</span><span class="n">style_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local sld file as a new style.</span>
+<span class="sd">        The sytle must not exist yet.</span>
+
+<span class="sd">    :param style_name: the name of the new style</span>
+<span class="sd">    :param file_path: the local path to the .sld file</span>
+<span class="sd">    :param workspace:  (Default value = None) the name of the workspace.</span>
+<span class="sd">        If the workspace name is not given, the new style will be a global one.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># a.username, a.passwd, a.server_url = get_cfg()</span>
+
+    <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace</span><span class="si">}</span><span class="s2">/styles&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/styles&quot;</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/vnd.ogc.sld+xml&quot;</span><span class="p">}</span>
+    <span class="c1"># SLD 1.1 / SE 1.1 with a mime type of application/vnd.ogc.se+xml</span>
+    <span class="c1"># SLD package(zip file containing sld and image files used in the style) with a mime type of application/zip</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">style_name</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">style_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">style_data</span><span class="p">,</span>
+            <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">passwd</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to upload style </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="upload_zip"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_zip">[docs]</a><span class="nd">@auth</span>
+<span class="k">def</span> <span class="nf">upload_zip</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;shp&quot;</span><span class="p">,</span> <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local .zip file which contains shapefile.</span>
+<span class="sd">        warning: when use configure=&quot;all&quot;, all the shapefiles in the datastore will</span>
+<span class="sd">        be published(not only the one you just uploaded)</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        upload the shapefile</span>
+<span class="sd">    :param store_name: the name of datastore in which you would like to upload the shapefile</span>
+<span class="sd">    :param file_path: the local file path to your shapefile(.zip)</span>
+<span class="sd">    :param format: support &#39;shp&#39; and &#39;gpkg&#39;</span>
+<span class="sd">    :param configure: this parameter takes three possible values</span>
+<span class="sd">        &quot;first&quot; —- (Default) Only setup the first feature type available in the data store.</span>
+<span class="sd">        &quot;none&quot;  —- Do not configure any feature types.</span>
+<span class="sd">        &quot;all&quot;   —- Configure all feature types.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/zip&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/xml&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/datastores&quot;</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/file.</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">?filename=</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&amp;update=overwrite&amp;configure=</span><span class="si">{</span><span class="n">configure</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span>
+            <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">passwd</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="upload_geopackage_zip"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_geopackage_zip">[docs]</a><span class="k">def</span> <span class="nf">upload_geopackage_zip</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local .zip file which contains geopackage file.</span>
+<span class="sd">        warning: when use configure=&quot;all&quot;, all the shapefiles in the datastore will</span>
+<span class="sd">        be published(not only the one you just uploaded)</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        upload the shapefile</span>
+<span class="sd">    :param store_name: the name of datastore in which you would like to upload the shapefile</span>
+<span class="sd">    :param file_path: the local file path to your geopackage(.zip)</span>
+<span class="sd">    :param configure: this parameter takes three possible values</span>
+<span class="sd">        &quot;first&quot; —- (Default) Only setup the first feature type available in the data store.</span>
+<span class="sd">        &quot;none&quot;  —- Do not configure any feature types.</span>
+<span class="sd">        &quot;all&quot;   —- Configure all feature types.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">upload_zip</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;gpkg&quot;</span><span class="p">,</span> <span class="n">configure</span><span class="p">)</span>
+
+    <span class="c1"># it seems there is bug in geoserver 2.21</span>
+    <span class="c1"># I have to update the &quot;database&quot; path to make the store valid</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">cfg</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;dataStore&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">store_name</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;GeoPackage&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;connectionParameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;entry&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;database&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;$&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;file:data/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;@key&quot;</span><span class="p">:</span> <span class="s2">&quot;dbtype&quot;</span><span class="p">,</span> <span class="s2">&quot;$&quot;</span><span class="p">:</span> <span class="s2">&quot;geopkg&quot;</span><span class="p">},</span>
+                <span class="p">]</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/datastores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/&quot;</span>
+
+    <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
+        <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">passwd</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="upload_shapefile_zip"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_shapefile_zip">[docs]</a><span class="k">def</span> <span class="nf">upload_shapefile_zip</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local .zip file which contains shapefile.</span>
+<span class="sd">        warning: when use configure=&quot;all&quot;, all the shapefiles in the datastore will</span>
+<span class="sd">        be published(not only the one you just uploaded)</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        upload the shapefile</span>
+<span class="sd">    :param store_name: the name of datastore in which you would like to upload the shapefile</span>
+<span class="sd">    :param file_path: the local file path to your shapefile(.zip)</span>
+<span class="sd">    :param configure: this parameter takes three possible values</span>
+<span class="sd">        &quot;first&quot; —- (Default) Only setup the first feature type available in the data store.</span>
+<span class="sd">        &quot;none&quot;  —- Do not configure any feature types.</span>
+<span class="sd">        &quot;all&quot;   —- Configure all feature types.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">upload_zip</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;shp&quot;</span><span class="p">,</span> <span class="n">configure</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="upload_shapefile"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_shapefile">[docs]</a><span class="k">def</span> <span class="nf">upload_shapefile</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local shapefile. A shapefile may contain several files.</span>
+<span class="sd">        You need to specify the path of the .shp file.</span>
+
+<span class="sd">        warning: when use configure=&quot;all&quot;, all the shapefiles in the datastore will</span>
+<span class="sd">        be published(not only the one you just uploaded)</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        upload the shapefile</span>
+<span class="sd">    :param store_name: the name of datastore in which you would like to upload the shapefile</span>
+<span class="sd">    :param file_path: the local path to your shapefile, such as xxxxxx.shp</span>
+<span class="sd">    :param configure: this parameter takes three possible values</span>
+<span class="sd">        first—(Default) Only setup the first feature type available in the data store.</span>
+<span class="sd">        none—Do not configure any feature types.</span>
+<span class="sd">        all—Configure all feature types.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">stem</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span>
+
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.zip&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">upload_shapefile_zip</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">configure</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.shp&quot;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">.*&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+                <span class="n">compression</span><span class="o">=</span><span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">,</span>
+                <span class="n">compresslevel</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">tmp_zip</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="n">tmp_zip</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="n">upload_shapefile_zip</span><span class="p">(</span>
+                <span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">,</span> <span class="n">configure</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file extension: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="upload_geopackage"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_geopackage">[docs]</a><span class="k">def</span> <span class="nf">upload_geopackage</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a local geopackage file.</span>
+
+<span class="sd">        warning: when use configure=&quot;all&quot;, all the shapefiles in the datastore will</span>
+<span class="sd">        be published(not only the one you just uploaded)</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        upload the shapefile</span>
+<span class="sd">    :param store_name: the name of datastore in which you would like to upload the shapefile</span>
+<span class="sd">    :param file_path: the local path to your geopackge file</span>
+<span class="sd">    :param configure: this parameter takes three possible values</span>
+<span class="sd">        first—(Default) Only setup the first feature type available in the data store.</span>
+<span class="sd">        none—Do not configure any feature types.</span>
+<span class="sd">        all—Configure all feature types.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">stem</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span>
+
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.zip&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">upload_zip</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;gpkg&quot;</span><span class="p">,</span> <span class="n">configure</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.gpkg&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # upload geopackage file without compression</span>
+<span class="sd">        headers = {</span>
+<span class="sd">            &quot;Content-type&quot;: &quot;application/x-sqlite3&quot;,</span>
+<span class="sd">            &quot;Accept&quot;: &quot;application/xml&quot;,</span>
+<span class="sd">        }</span>
+
+<span class="sd">        url = (</span>
+<span class="sd">            f&quot;{a.server_url}/rest/workspaces/{workspace_name}/datastores&quot;</span>
+<span class="sd">            + f&quot;/{store_name}/file.gpkg?filename={file_name}{ext}&amp;update=overwrite&amp;configure={configure}&quot;</span>
+<span class="sd">        )</span>
+
+<span class="sd">        with open(file_path, &quot;rb&quot;) as f:</span>
+<span class="sd">            r = requests.put(</span>
+<span class="sd">                url,</span>
+<span class="sd">                data=f.read(),</span>
+<span class="sd">                auth=(a.username, a.passwd),</span>
+<span class="sd">                headers=headers,</span>
+<span class="sd">            )&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span><span class="si">}</span><span class="s2">.*&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+                <span class="n">compression</span><span class="o">=</span><span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">,</span>
+                <span class="n">compresslevel</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">tmp_zip</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="n">tmp_zip</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">upload_geopackage_zip</span><span class="p">(</span>
+                <span class="n">workspace_name</span><span class="p">,</span>
+                <span class="n">store_name</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmp_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">,</span>
+                <span class="n">configure</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file extension: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="upload_shapefile_folder"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.upload.upload_shapefile_folder">[docs]</a><span class="k">def</span> <span class="nf">upload_shapefile_folder</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">folder_path</span><span class="p">,</span> <span class="n">configure</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload all the shapefiles within a local folder. The shapefiles can be .zip files or separate files.</span>
+<span class="sd">        Make sure your .zip is valid. If there is a folder in your .zip file, the upload will fail.</span>
+<span class="sd">        For example, if, inside you .zip file, your files looks like shapefile/xxxxxxx.shp, the .zip file cannot be uploaded.</span>
+<span class="sd">        Inside your .zip file, it must looks like this xxxxxxxx.shp, xxxxxxxx.dbf, etc.</span>
+
+<span class="sd">        warning: when use configure=&quot;all&quot;, all the shapefiles in the datastore will</span>
+<span class="sd">        be published(not only the one you just uploaded)</span>
+
+<span class="sd">    :param workspace_name: the name of destine workspace in which you would like to</span>
+<span class="sd">        upload the shapefiles</span>
+<span class="sd">    :param store_name: the name of datastore in which you would like to upload the shapefiles</span>
+<span class="sd">    :param folder_path: the local path to your shapefiles</span>
+<span class="sd">    :param configure: this parameter takes three possible values</span>
+<span class="sd">        first—(Default) Only setup the first feature type available in the data store.</span>
+<span class="sd">        none—Do not configure any feature types.</span>
+<span class="sd">        all—Configure all feature types.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shp_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_path</span><span class="si">}</span><span class="s2">/*.shp&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">shp_files</span><span class="p">:</span>
+        <span class="n">upload_shapefile</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">configure</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">zip_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_path</span><span class="si">}</span><span class="s2">/*.zip&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">zip_files</span><span class="p">:</span>
+        <span class="n">upload_shapefile</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">configure</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;Done&quot;</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Michael Chin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
