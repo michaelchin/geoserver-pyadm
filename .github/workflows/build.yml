@@ -20,14 +20,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: michaelchin/geoserver-pyadm
-          ref: gp-pages
+          ref: gh-pages
           token: ${{ secrets.GH_PAGE_COMMIT_TOKEN }}
           path: gp-pages
        
       - name: Update websites
         run: | 
           chmod +x ./main/build-doc.sh
-          ./main/build-doc.sh
+          cd main
+          ./build-doc.sh
         env:
           GITHUB_TOKEN: '${{secrets.GH_PAGE_COMMIT_TOKEN}}'
 
