@@ -17,7 +17,7 @@ else:
     import sys
 
     # Important: you need to `pip uninstall -y geoserver-pyadm`
-    sys.path.append("../..")
+    sys.path.insert(0, "../..")
     from geoserver_pyadm import geoserver
 
     print("GEOSERVER_PYADM_TEST_MODULE=false; testing geoserver.py")

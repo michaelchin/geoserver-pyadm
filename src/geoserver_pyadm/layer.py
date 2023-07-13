@@ -3,6 +3,8 @@ import requests, json
 from . import _auth as a
 from ._auth import auth
 
+from . import coveragestore
+
 
 @auth
 def publish_layer(workspace_name, store_name, layer_name):
@@ -32,19 +34,26 @@ def publish_layer(workspace_name, store_name, layer_name):
 
 
 @auth
-def publish_raster_layer(workspace_name, store_name, layer_name):
+def publish_raster_layer(workspace_name, store_name, layer_name, native_name=None):
     """Publish a coverage/raster layer from a coverage store.
         It seems ,for some reason, that only one raster is allowed per coverage store.
 
     :param workspace_name: the name of the workspace
     :param store_name: the name of the coverage store in which the raster layer reside
     :param layer_name: the name of the raster layer
+    :param native_name: the native name must be the same with the file name. if None, try to get the file name from store
 
     """
     # a.username, a.passwd, a.server_url = get_cfg()
     url = f"{a.server_url}/rest/workspaces/{workspace_name}/coveragestores/{store_name}/coverages/"
 
-    layer_xml = f"<coverage><name>{layer_name}</name><nativeName>{layer_name}</nativeName></coverage>"
+    if not native_name:
+        r = coveragestore.get_coverage_store_info(workspace_name, store_name)
+        filename = r["coverageStore"]["url"].split("/")[-1]
+        ext = filename.split(".")[-1]
+        native_name = filename[: -len(ext) - 1]
+
+    layer_xml = f"<coverage><name>{layer_name}</name><nativeName>{native_name}</nativeName></coverage>"
     headers = {"content-type": "text/xml"}
 
     r = requests.post(
