@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -78,7 +78,9 @@
 <span class="kn">from</span> <span class="nn">._auth</span> <span class="kn">import</span> <span class="n">auth</span>
 
 
-<div class="viewcode-block" id="get_coverage_stores"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_coverage_stores">[docs]</a><span class="nd">@auth</span>
+<div class="viewcode-block" id="get_coverage_stores">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_coverage_stores">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">get_coverage_stores</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;return a list of names of coverage store within a workspace</span>
 
@@ -101,7 +103,10 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="get_coverage_store_info"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_coverage_store_info">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="get_coverage_store_info">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_coverage_store_info">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">get_coverage_store_info</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;return the coverage store configuration in json format</span>
 
@@ -121,7 +126,10 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="delete_coverage_store"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.delete_coverage_store">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="delete_coverage_store">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.delete_coverage_store">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">delete_coverage_store</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">):</span>
     <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">server_url</span><span class="si">}</span><span class="s2">/rest/workspaces/</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">/coveragestores/</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">/&quot;</span>
@@ -138,7 +146,10 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="create_coverage_store"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.create_coverage_store">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="create_coverage_store">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.create_coverage_store">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">create_coverage_store</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;GeoTIFF&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a coverage store from a raster file on the geoserver.</span>
 
@@ -178,7 +189,10 @@
     <span class="k">return</span> <span class="n">r</span></div>
 
 
-<div class="viewcode-block" id="create_coverage"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.create_coverage">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="create_coverage">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.create_coverage">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">create_coverage</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">coverage_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a coverage within a coverage store. It is more like publishing a layer?</span>
 <span class="sd">    Anyway, it is useful for image mosaic stores, which allows multiple coverages in one store.</span>
@@ -213,7 +227,10 @@
     <span class="k">return</span> <span class="n">r</span></div>
 
 
-<div class="viewcode-block" id="get_available_coverage_names"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_available_coverage_names">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="get_available_coverage_names">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.coveragestore.get_available_coverage_names">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">get_available_coverage_names</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;return a list of names of available coverages within a coverage store.</span>
 <span class="sd">        This is something like unpublished layers. You can use create_coverage() to publish the layers.</span>
@@ -233,6 +250,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[]</span></div>
+
 </pre></div>
 
            </div>

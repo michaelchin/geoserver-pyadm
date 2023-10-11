@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -77,7 +77,9 @@
 <span class="kn">from</span> <span class="nn">._auth</span> <span class="kn">import</span> <span class="n">auth</span>
 
 
-<div class="viewcode-block" id="reindex_image_mosaic_store"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.reindex_image_mosaic_store">[docs]</a><span class="nd">@auth</span>
+<div class="viewcode-block" id="reindex_image_mosaic_store">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.reindex_image_mosaic_store">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">reindex_image_mosaic_store</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reindex an image mosaic store. Re-populate the store with the files in the given path.</span>
 
@@ -100,7 +102,10 @@
     <span class="k">return</span> <span class="n">r</span></div>
 
 
-<div class="viewcode-block" id="add_raster_to_image_mosaic_store"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.add_raster_to_image_mosaic_store">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="add_raster_to_image_mosaic_store">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.add_raster_to_image_mosaic_store">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">add_raster_to_image_mosaic_store</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a new raster file into the image mosaic store. The raster file must be in the server.</span>
 <span class="sd">        Geoserver calls this process &quot;harvesting&quot;.</span>
@@ -123,7 +128,10 @@
     <span class="k">return</span> <span class="n">r</span></div>
 
 
-<div class="viewcode-block" id="get_rasters_in_coverage"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.get_rasters_in_coverage">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="get_rasters_in_coverage">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.get_rasters_in_coverage">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">get_rasters_in_coverage</span><span class="p">(</span>
     <span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">coverage_name</span><span class="p">,</span> <span class="n">return_details</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
@@ -163,7 +171,10 @@
         <span class="k">return</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="delete_raster_from_coverage"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.delete_raster_from_coverage">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="delete_raster_from_coverage">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.delete_raster_from_coverage">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">delete_raster_from_coverage</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">coverage_name</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a raster from a coverage within an image mosaic store</span>
 
@@ -185,7 +196,10 @@
     <span class="k">return</span> <span class="n">r</span></div>
 
 
-<div class="viewcode-block" id="enable_time_dimension"><a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.enable_time_dimension">[docs]</a><span class="nd">@auth</span>
+
+<div class="viewcode-block" id="enable_time_dimension">
+<a class="viewcode-back" href="../../geoserver_pyadm.html#geoserver_pyadm.imagemosaic.enable_time_dimension">[docs]</a>
+<span class="nd">@auth</span>
 <span class="k">def</span> <span class="nf">enable_time_dimension</span><span class="p">(</span><span class="n">workspace_name</span><span class="p">,</span> <span class="n">store_name</span><span class="p">,</span> <span class="n">coverage_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable time dimension for a coverage within a image mosaic store.</span>
 
@@ -229,6 +243,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to enable time dimension for </span><span class="si">{</span><span class="n">coverage_name</span><span class="si">}</span><span class="s2">. &quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">r</span></div>
+
 </pre></div>
 
            </div>
