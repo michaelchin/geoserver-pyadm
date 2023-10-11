@@ -1,3 +1,5 @@
+doc/source/geoserver_pyadm.rst
+doc/build
 *.DS_Store
 src/geoserver_pyadm.egg-info
 geoserver-pyadm-venv/
