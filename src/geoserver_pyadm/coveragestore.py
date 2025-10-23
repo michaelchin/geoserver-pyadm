@@ -112,9 +112,9 @@ def create_coverage(workspace_name, store_name, coverage_name):
     """Create a coverage within a coverage store. It is more like publishing a layer?
     Anyway, it is useful for image mosaic stores, which allows multiple coverages in one store.
 
-    param workspace_name: workspace name
-    param store_name: coverage store name
-    param coverage_name: the name of the new coverage
+    :param workspace_name: workspace name
+    :param store_name: coverage store name
+    :param coverage_name: the name of the new coverage
 
     """
     cfg = {

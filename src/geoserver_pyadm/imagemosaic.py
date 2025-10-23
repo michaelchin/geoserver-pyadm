@@ -118,9 +118,9 @@ def delete_raster_from_coverage(workspace_name, store_name, coverage_name, id):
 def enable_time_dimension(workspace_name, store_name, coverage_name):
     """Enable time dimension for a coverage within a image mosaic store.
 
-    param workspace_name: workspace name
-    param store_name: coverage store name
-    param coverage_name: the name of the new coverage
+    :param workspace_name: workspace name
+    :param store_name: coverage store name
+    :param coverage_name: the name of the new coverage
 
     """
     cfg = {
