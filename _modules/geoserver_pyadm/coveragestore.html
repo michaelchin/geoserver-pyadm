@@ -70,12 +70,15 @@
              
   <h1>Source code for geoserver_pyadm.coveragestore</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_auth</span> <span class="k">as</span> <span class="n">a</span>
 <span class="kn">from</span> <span class="nn">._auth</span> <span class="kn">import</span> <span class="n">auth</span>
+<span class="kn">from</span> <span class="nn">._exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FailedToDeleteDatastore</span><span class="p">,</span>
+    <span class="n">DatastoreDoesNotExists</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_coverage_stores">
@@ -139,11 +142,12 @@
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">passwd</span><span class="p">),</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">id</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coverage store </span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2"> has been deleted.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DatastoreDoesNotExists</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">raise</span> <span class="n">FailedToDeleteDatastore</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">workspace_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">store_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span></div>
 
 
 
