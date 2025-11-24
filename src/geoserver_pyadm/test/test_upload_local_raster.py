@@ -14,7 +14,7 @@ os.system(
     "unzip -o rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff.zip -d rasters"
 )
 
-# upload the local raster zip file
+# upload the local raster file
 r = geoserver.upload_raster(
     ws_name_1,
     store_name_1,
@@ -25,6 +25,7 @@ r = geoserver.upload_raster(
 )
 print(r)
 
+# upload the local raster in a zip file
 r = geoserver.upload_raster(
     ws_name_1,
     store_name_2,
@@ -37,13 +38,14 @@ print(r)
 
 os.system("rm -f rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff.zip ")
 
+# upload the local raster files in a folder
 r = geoserver.upload_raster_folder(ws_name_2, "rasters")
 print(r)
 
+# restore the zip files. make the files the same as before running this test script.
 os.system(
     "zip -oj rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff.zip rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff"
 )
-
 os.system("rm -f rasters/EarthByte_AREPS_Muller_etal_2016_AgeGrid-0.tiff")
 
 if len(sys.argv) > 1:

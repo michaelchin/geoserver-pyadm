@@ -1,10 +1,13 @@
 import json
-import os
 
 import requests
 
 from . import _auth as a
 from ._auth import auth
+from ._exceptions import (
+    FailedToDeleteDatastore,
+    DatastoreDoesNotExists,
+)
 
 
 @auth
@@ -60,11 +63,12 @@ def delete_coverage_store(workspace_name, store_name):
     r = requests.delete(url, auth=(a.username, a.passwd), params=payload)
 
     if r.status_code in [200, 201]:
-        return id
+        print(f"Coverage store {workspace_name}:{store_name} has been deleted.")
+    elif r.status_code == 404:
+        raise DatastoreDoesNotExists(f"{workspace_name}:{store_name}")
     else:
-        print(r.text)
-        print(r.status_code)
-        return None
+        raise FailedToDeleteDatastore(f"{workspace_name}:{store_name}")
+    return r
 
 
 @auth
